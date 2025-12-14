@@ -20,18 +20,19 @@ public class Input extends MouseAdapter {
         int col = (e.getX() - board.offsetX) / board.tileSize;
         int row = (e.getY() - board.offsetY) / board.tileSize;
 
-        Unit unitXY = board.getUnit(col, row);
+        Unit clickedUnit = board.getUnit(col, row);
 
-        if (unitXY != null) {
+        // === NORMAL SELECTION ===
+        if (clickedUnit != null) {
             System.out.println("PRESSED: Unit selected at Grid (" + col + ", " + row + ")");
-            this.startCol = unitXY.getX();
-            this.startRow = unitXY.getY();
-            board.onUnitSelected(unitXY);  // updates selectedUnit + panel
+            board.onUnitSelected(clickedUnit);
         } else {
-            // clicked empty tile: deselect everything
-            board.clearSelection();
+            if (board.currentMode == Board.ActionMode.NONE) {
+                board.clearSelection();
+            }
         }
     }
+
 
     @Override
     public void mouseReleased(MouseEvent e) {
@@ -41,30 +42,56 @@ public class Input extends MouseAdapter {
         Unit u = board.selectedUnit;
         if (u == null) return;
 
+        System.out.println(
+            "DEBUG: hasActedThisTurn = " + u.hasActedThisTurn +
+            ", mode = " + board.currentMode
+        );
+
         if (board.currentMode == Board.ActionMode.MOVE) {
+
+            if (u.hasActedThisTurn) {
+                board.setActionMode(Board.ActionMode.NONE);
+                return;
+            }
 
             if (ValidateMove.isMoveValid(board, u, targetCol, targetRow)) {
                 Move m = new Move(board, u, targetCol, targetRow);
                 board.makeMove(m);
-            } else {
-                // revert to original tile
-                u.setPosition(this.startCol, this.startRow);
+                u.hasActedThisTurn = true; // MOVE consumes turn
             }
 
-            board.setActionMode(Board.ActionMode.NONE); // clears highlights but keeps selection
+            board.setActionMode(Board.ActionMode.NONE);
 
+            if (board.allAlliesActed()) {
+                board.endTurn();
+            }
+            return;
         } else if (board.currentMode == Board.ActionMode.ATTACK) {
+
+            if (u.hasActedThisTurn) {
+                System.out.println("Unit already acted this turn.");
+                board.setActionMode(Board.ActionMode.NONE);
+                return;
+            }
 
             if (board.selectedAction != null &&
                 board.selectedAction.canTarget(board, u, targetCol, targetRow)) {
 
-                board.selectedAction.execute(board, u, targetCol, targetRow);
+                int cost = board.selectedAction.getEnergyCost();
+
+                if (u.hasEnoughEnergy(cost)) {
+                    board.selectedAction.execute(board, u, targetCol, targetRow);
+                    u.spendEnergy(cost);
+                    u.hasActedThisTurn = true; // 🔴 ATTACK ENDS TURN
+                }
             }
 
             board.selectedAction = null;
             board.setActionMode(Board.ActionMode.NONE);
-        }
 
-        board.repaint();
+            if (board.allAlliesActed()) {
+                board.endTurn();
+            }
+        }
     }
 }

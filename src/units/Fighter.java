@@ -2,7 +2,10 @@ package units;
 
 import java.awt.*;
 
-import actions.BasicAttack;
+import actions.VoidSlash;
+import actions.ShadowsRise;
+import actions.EventHorizon;
+
 
 public class Fighter extends Unit {
 
@@ -16,12 +19,15 @@ public class Fighter extends Unit {
         this.atk = 300;
         this.magicAtk = 50;
         this.def = 450;
-        this.energy = 4;
+        this.energy = 2;
+        this.maxEnergy = 4;
 
         this.moveRange = 2;
         this.attackRange = 1;
 
-        this.actions.add(new BasicAttack());
+        this.actions.add(new VoidSlash());
+        this.actions.add(new ShadowsRise());
+        this.actions.add(new EventHorizon());
     }
 
     @Override

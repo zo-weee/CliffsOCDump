@@ -2,6 +2,10 @@ package units;
 
 import java.awt.*;
 
+import actions.LoneWolfCharge;
+import actions.DevilsMaw;
+import actions.AbsoluteTyranny;
+
 public class Tank extends Unit {
 
     public Tank(int x, int y) {
@@ -14,10 +18,15 @@ public class Tank extends Unit {
         this.atk = 120;
         this.magicAtk = 20;
         this.def = 540;
-        this.energy = 5;
+        this.energy = 2;
+        this.maxEnergy = 5;
 
         this.moveRange = 1;
         this.attackRange = 1;
+
+        this.actions.add(new LoneWolfCharge());
+        this.actions.add(new DevilsMaw());
+        this.actions.add(new AbsoluteTyranny());
     }
 
     @Override

@@ -2,6 +2,10 @@ package units;
 
 import java.awt.*;
 
+import actions.LightDrive;
+import actions.Sanctification;
+import actions.APromiseToLife;
+
 public class Healer extends Unit {
 
     public Healer(int x, int y) {
@@ -14,10 +18,15 @@ public class Healer extends Unit {
         this.atk = 130;
         this.magicAtk = 200;
         this.def = 540;
-        this.energy = 3;
+        this.energy = 2;
+        this.maxEnergy = 4;
 
         this.moveRange = 2;
         this.attackRange = 1;
+
+        this.actions.add(new LightDrive());
+        this.actions.add(new Sanctification());
+        this.actions.add(new APromiseToLife());
     }
 
     @Override

@@ -2,6 +2,10 @@ package units;
 
 import java.awt.*;
 
+import actions.ForbiddenKnowledge;
+import actions.Enlightenment;
+import actions.ThePathToSolitude;
+
 public class Buffer extends Unit {
 
     public Buffer(int x, int y) {
@@ -14,10 +18,15 @@ public class Buffer extends Unit {
         this.atk = 250;
         this.magicAtk = 300;
         this.def = 270;
-        this.energy = 6;
+        this.energy = 2;
+        this.maxEnergy = 6;
 
         this.moveRange = 2;
         this.attackRange = 1;
+
+        this.actions.add(new ForbiddenKnowledge());
+        this.actions.add(new Enlightenment());
+        this.actions.add(new ThePathToSolitude());
     }
 
     @Override

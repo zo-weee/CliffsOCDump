@@ -3,11 +3,11 @@ package actions;
 import main.Board;
 import units.Unit;
 
-public class BasicAttack implements Action {
+public class VoidSlash implements Action {
 
     @Override
     public String getName() {
-        return "Basic Attack";
+        return "Void Slash";
     }
 
     @Override
@@ -18,7 +18,10 @@ public class BasicAttack implements Action {
     @Override
     public boolean canTarget(Board board, Unit user, int col, int row) {
         Unit target = board.getUnit(col, row);
-        return target != null && target.team != user.team;
+        return target != null &&
+               target.team != user.team &&
+               Math.abs(user.getX() - col) <= 1 &&
+               Math.abs(user.getY() - row) <= 1;
     }
 
     @Override
@@ -26,7 +29,9 @@ public class BasicAttack implements Action {
         Unit target = board.getUnit(col, row);
         if (target == null) return;
 
-        int rawDamage = user.atk;
-        board.applyDamage(target, rawDamage);
+        int damage = (int)(user.atk * 1.10);
+        board.applyDamage(target, damage);
+
+        user.gainEnergy(2);
     }
 }

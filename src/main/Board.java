@@ -2,6 +2,7 @@ package main;
 
 import units.Unit;
 import actions.Action;
+import units.Mage;
 
 import javax.swing.JPanel;
 import java.awt.Color;
@@ -57,6 +58,37 @@ public class Board extends JPanel {
         for (int i = 0; i < units.size() && i < startX.length; i++) {
             units.get(i).setPosition(startX[i], startY);
         }
+
+        // === TEMP DUMMY ENEMIES FOR TESTING ===
+        Mage e1 = new Mage(4, 8);
+        e1.name = "Dummy Enemy 1";
+        e1.team = Unit.Team.ENEMY;
+        e1.maxHp = 800;
+        e1.curHp = 800;
+        e1.atk = 120;
+        e1.def = 80;
+
+        Mage e2 = new Mage(6, 8);
+        e2.name = "Dummy Enemy 2";
+        e2.team = Unit.Team.ENEMY;
+        e2.maxHp = 1000;
+        e2.curHp = 1000;
+        e2.atk = 140;
+        e2.def = 100;
+
+        Mage e3 = new Mage(8, 8);
+        e3.name = "Dummy Enemy 3";
+        e3.team = Unit.Team.ENEMY;
+        e3.maxHp = 1200;
+        e3.curHp = 1200;
+        e3.atk = 160;
+        e3.def = 120;
+
+        // IMPORTANT: add to same units list
+        units.add(e1);
+        units.add(e2);
+        units.add(e3);
+
 
         if (this.actionPanel != null) {
             this.actionPanel.setBoard(this);
@@ -126,7 +158,9 @@ public class Board extends JPanel {
 
     public void setActionMode(ActionMode mode) {
         this.currentMode = mode;
-        clearHighlights();
+        if (mode == ActionMode.NONE) {
+            clearHighlights();
+        }
     }
 
     public void onUnitSelected(Unit u) {
@@ -247,4 +281,28 @@ public class Board extends JPanel {
 
         repaint();
     }
+
+    public void endTurn() {
+        for (Unit u : units) {
+            u.processStatuses(this);   // 🔥 delayed effects trigger here
+            u.resetTurn();
+        }
+        System.out.println("New turn started.");
+        repaint();
+    }
+
+
+    public boolean allAlliesActed() {
+        for (Unit u : units) {
+            if (u.team == Unit.Team.ALLY && !u.hasActedThisTurn) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public ArrayList<Unit> getUnits() {
+        return units;
+    }
+
 }
