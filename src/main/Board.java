@@ -1,6 +1,7 @@
 package main;
 
 import units.Unit;
+import actions.Action;
 
 import javax.swing.JPanel;
 import java.awt.Color;
@@ -18,6 +19,8 @@ public class Board extends JPanel {
         MOVE,
         ATTACK
     }
+
+    public Action selectedAction;
 
     public ActionMode currentMode = ActionMode.NONE;
 
@@ -83,15 +86,31 @@ public class Board extends JPanel {
 
     public void performAttack(Unit attacker, int targetCol, int targetRow) {
         Unit target = getUnit(targetCol, targetRow);
-        if (target != null && target != attacker) {
-            System.out.println(attacker.name + " attacks " + target.name + " at (" + targetCol + ", " + targetRow + ")");
-            // for now: instant kill
-            units.remove(target);
-            repaint();
-        } else {
-            System.out.println("No valid target to attack at (" + targetCol + ", " + targetRow + ")");
+        if (attacker.team == target.team) {
+            System.out.println("Cannot attack ally.");
+            return;
         }
+
+        if (target == null || target == attacker) return;
+
+        int rawDamage = attacker.atk;
+        int finalDamage = Math.max(0, rawDamage - target.def);
+
+        target.takeDamage(finalDamage);
+
+        System.out.println(
+            attacker.name + " hits " + target.name +
+            " for " + finalDamage + " damage (HP left: " + target.curHp + ")"
+        );
+
+        if (!target.isAlive()) {
+            units.remove(target);
+            System.out.println(target.name + " was defeated.");
+        }
+
+        repaint();
     }
+
 
     // ==== Highlights & selection ====
 
@@ -164,9 +183,11 @@ public class Board extends JPanel {
                 if (targetRow < 0 || targetRow >= rows) continue;
 
                 // only highlight tiles that actually have a unit to hit
-                if (getUnit(targetCol, targetRow) != null) {
+                Unit target = getUnit(targetCol, targetRow);
+                if (target != null && target.team != unitXY.team) {
                     tiles.add(new Point(targetCol, targetRow));
                 }
+
             }
         }
         setHighlights(tiles);
@@ -214,5 +235,16 @@ public class Board extends JPanel {
         for (Unit u : units) {
             u.draw(g2d, tileSize, offsetX, offsetY);
         }
+    }
+
+    public void applyDamage(Unit target, int damage) {
+        int finalDamage = Math.max(0, damage - target.def);
+        target.takeDamage(finalDamage);
+
+        if (!target.isAlive()) {
+            units.remove(target);
+        }
+
+        repaint();
     }
 }

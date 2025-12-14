@@ -1,6 +1,7 @@
 package main;
 
 import units.Unit;
+import actions.Action;
 
 import javax.swing.*;
 import java.awt.*;
@@ -59,12 +60,18 @@ public class ActionPanel extends JPanel {
         add(buttonsPanel, BorderLayout.WEST);
 
         // === BUTTON LOGIC ===
-        moveButton.addActionListener(e -> {
-            if (selectedUnit != null && board != null) {
-                board.setActionMode(Board.ActionMode.MOVE);
-                board.showMoveHighlightsFor(selectedUnit);
-            }
+        attackButton.addActionListener(e -> {
+            if (selectedUnit == null || board == null) return;
+            if (selectedUnit.actions.isEmpty()) return;
+
+            // ✅ STEP 2: select the unit's basic attack
+            Action action = selectedUnit.actions.get(0);
+            board.selectedAction = action;
+
+            board.setActionMode(Board.ActionMode.ATTACK);
+            board.showAttackHighlightsFor(selectedUnit);
         });
+
 
         attackButton.addActionListener(e -> {
             if (selectedUnit != null && board != null) {

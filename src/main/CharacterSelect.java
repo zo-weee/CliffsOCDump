@@ -65,6 +65,11 @@ public class CharacterSelect extends JPanel {
     }
 
     private void startGame() {
+
+        for (Unit u : chosenUnits) {
+            u.team = Unit.Team.ALLY;
+        }
+
         SelectedTeam.team = chosenUnits;
 
         GameScreen game = new GameScreen(frame, chosenUnits);

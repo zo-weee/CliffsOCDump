@@ -2,6 +2,8 @@ package units;
 
 import java.awt.*;
 
+import actions.BasicAttack;
+
 public class Fighter extends Unit {
 
     public Fighter(int x, int y) {
@@ -18,6 +20,8 @@ public class Fighter extends Unit {
 
         this.moveRange = 2;
         this.attackRange = 1;
+
+        this.actions.add(new BasicAttack());
     }
 
     @Override

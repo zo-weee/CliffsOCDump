@@ -55,17 +55,14 @@ public class Input extends MouseAdapter {
 
         } else if (board.currentMode == Board.ActionMode.ATTACK) {
 
-            int dx = Math.abs(u.getX() - targetCol);
-            int dy = Math.abs(u.getY() - targetRow);
-            boolean inRange = (dx <= u.attackRange) && (dy <= u.attackRange) && !(dx == 0 && dy == 0);
+            if (board.selectedAction != null &&
+                board.selectedAction.canTarget(board, u, targetCol, targetRow)) {
 
-            if (inRange && board.getUnit(targetCol, targetRow) != null) {
-                board.performAttack(u, targetCol, targetRow);
-            } else {
-                System.out.println("Attack out of range or no target.");
+                board.selectedAction.execute(board, u, targetCol, targetRow);
             }
 
-            board.setActionMode(Board.ActionMode.NONE); // clear red tiles, keep unit selected
+            board.selectedAction = null;
+            board.setActionMode(Board.ActionMode.NONE);
         }
 
         board.repaint();
