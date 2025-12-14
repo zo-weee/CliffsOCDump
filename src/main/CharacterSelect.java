@@ -192,8 +192,12 @@ public class CharacterSelect extends JPanel {
         this.add(bottomPanel, BorderLayout.SOUTH);
     }
 
-    private void showUnitInfo(Unit u){
-        Image scaled = u.picLarge.getScaledInstance(BIG_PORTRAIT_SIZE, BIG_PORTRAIT_SIZE, Image.SCALE_SMOOTH);
+        private void showUnitInfo(Unit u){
+        Image scaled = u.picLarge.getScaledInstance(
+            BIG_PORTRAIT_SIZE,
+            BIG_PORTRAIT_SIZE,
+            Image.SCALE_SMOOTH
+        );
         bigPortrait.setIcon(new ImageIcon(scaled));
 
         nameLabel.setText(u.name);
@@ -217,6 +221,14 @@ public class CharacterSelect extends JPanel {
         addToTeamBtn.setVisible(true);
         revalidate();
         repaint();
+    }
+
+    private void startGame() {
+        for (Unit u : chosenUnits) {
+            u.team = Unit.Team.ALLY;
+        }
+
+        SelectedTeam.team = chosenUnits;
     }
 
     private void removeUnitFromTeam(int index) {

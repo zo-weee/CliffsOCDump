@@ -3,6 +3,9 @@ package units;
 import java.awt.*;
 
 import javax.swing.ImageIcon;
+import actions.LoneWolfCharge;
+import actions.DevilsMaw;
+import actions.AbsoluteTyranny;
 
 public class Tank extends Unit {
 
@@ -17,7 +20,8 @@ public class Tank extends Unit {
         this.atk = 120;
         this.magicAtk = 20;
         this.def = 540;
-        this.energy = 5;
+        this.energy = 2;
+        this.maxEnergy = 5;
 
         this.moveRange = 1;
         this.attackRange = 1;
@@ -47,6 +51,10 @@ public class Tank extends Unit {
             "<html><b>Absolute Tyranny</b>" + "<br>"
             + "Cerberus increases all allies' defenses equal to 60% + 68 of his defense." 
         ;
+        
+        this.actions.add(new LoneWolfCharge());
+        this.actions.add(new DevilsMaw());
+        this.actions.add(new AbsoluteTyranny());
     }
 
     @Override

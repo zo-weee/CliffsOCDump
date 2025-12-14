@@ -1,6 +1,8 @@
 package main;
 
 import units.Unit;
+import actions.Action;
+import units.Mage;
 
 import javax.swing.JPanel;
 import java.awt.Color;
@@ -18,6 +20,8 @@ public class Board extends JPanel {
         MOVE,
         ATTACK
     }
+
+    public Action selectedAction;
 
     public ActionMode currentMode = ActionMode.NONE;
 
@@ -55,6 +59,37 @@ public class Board extends JPanel {
             units.get(i).setPosition(startX[i], startY);
         }
 
+        // === TEMP DUMMY ENEMIES FOR TESTING ===
+        Mage e1 = new Mage(4, 8);
+        e1.name = "Dummy Enemy 1";
+        e1.team = Unit.Team.ENEMY;
+        e1.maxHp = 800;
+        e1.curHp = 800;
+        e1.atk = 120;
+        e1.def = 0;
+
+        Mage e2 = new Mage(6, 8);
+        e2.name = "Dummy Enemy 2";
+        e2.team = Unit.Team.ENEMY;
+        e2.maxHp = 1000;
+        e2.curHp = 1000;
+        e2.atk = 140;
+        e2.def = 0;
+
+        Mage e3 = new Mage(8, 8);
+        e3.name = "Dummy Enemy 3";
+        e3.team = Unit.Team.ENEMY;
+        e3.maxHp = 1200;
+        e3.curHp = 1200;
+        e3.atk = 160;
+        e3.def = 0;
+
+        // IMPORTANT: add to same units list
+        units.add(e1);
+        units.add(e2);
+        units.add(e3);
+
+
         if (this.actionPanel != null) {
             this.actionPanel.setBoard(this);
         }
@@ -83,15 +118,31 @@ public class Board extends JPanel {
 
     public void performAttack(Unit attacker, int targetCol, int targetRow) {
         Unit target = getUnit(targetCol, targetRow);
-        if (target != null && target != attacker) {
-            System.out.println(attacker.name + " attacks " + target.name + " at (" + targetCol + ", " + targetRow + ")");
-            // for now: instant kill
-            units.remove(target);
-            repaint();
-        } else {
-            System.out.println("No valid target to attack at (" + targetCol + ", " + targetRow + ")");
+        if (attacker.team == target.team) {
+            System.out.println("Cannot attack ally.");
+            return;
         }
+
+        if (target == null || target == attacker) return;
+
+        int rawDamage = attacker.atk;
+        int finalDamage = Math.max(0, rawDamage - target.def);
+
+        target.takeDamage(finalDamage);
+
+        System.out.println(
+            attacker.name + " hits " + target.name +
+            " for " + finalDamage + " damage (HP left: " + target.curHp + ")"
+        );
+
+        if (!target.isAlive()) {
+            units.remove(target);
+            System.out.println(target.name + " was defeated.");
+        }
+
+        repaint();
     }
+
 
     // ==== Highlights & selection ====
 
@@ -107,7 +158,9 @@ public class Board extends JPanel {
 
     public void setActionMode(ActionMode mode) {
         this.currentMode = mode;
-        clearHighlights();
+        if (mode == ActionMode.NONE) {
+            clearHighlights();
+        }
     }
 
     public void onUnitSelected(Unit u) {
@@ -164,9 +217,11 @@ public class Board extends JPanel {
                 if (targetRow < 0 || targetRow >= rows) continue;
 
                 // only highlight tiles that actually have a unit to hit
-                if (getUnit(targetCol, targetRow) != null) {
+                Unit target = getUnit(targetCol, targetRow);
+                if (target != null && target.team != unitXY.team) {
                     tiles.add(new Point(targetCol, targetRow));
                 }
+
             }
         }
         setHighlights(tiles);
@@ -215,4 +270,39 @@ public class Board extends JPanel {
             u.draw(g2d, tileSize, offsetX, offsetY);
         }
     }
+
+    public void applyDamage(Unit target, int damage) {
+        int finalDamage = Math.max(0, damage - target.def);
+        target.takeDamage(finalDamage);
+
+        if (!target.isAlive()) {
+            units.remove(target);
+        }
+
+        repaint();
+    }
+
+    public void endTurn() {
+        for (Unit u : units) {
+            u.processStatuses(this);   // 🔥 delayed effects trigger here
+            u.resetTurn();
+        }
+        System.out.println("New turn started.");
+        repaint();
+    }
+
+
+    public boolean allAlliesActed() {
+        for (Unit u : units) {
+            if (u.team == Unit.Team.ALLY && !u.hasActedThisTurn) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public ArrayList<Unit> getUnits() {
+        return units;
+    }
+
 }

@@ -3,6 +3,9 @@ package units;
 import java.awt.*;
 
 import javax.swing.ImageIcon;
+import actions.VoidSlash;
+import actions.ShadowsRise;
+import actions.EventHorizon;
 
 public class Fighter extends Unit {
 
@@ -17,7 +20,8 @@ public class Fighter extends Unit {
         this.atk = 300;
         this.magicAtk = 50;
         this.def = 450;
-        this.energy = 4;
+        this.energy = 2;
+        this.maxEnergy = 4;
 
         this.moveRange = 2;
         this.attackRange = 1;
@@ -46,6 +50,10 @@ public class Fighter extends Unit {
             "<html><b>Event Horizon</b>" + "<br>"
             + "Rokorou summons the destructiveness of a black hole dealing 350% of his attack + 100% of his magic attack to all enemies on the battlefield" 
         ;
+
+        this.actions.add(new VoidSlash());
+        this.actions.add(new ShadowsRise());
+        this.actions.add(new EventHorizon());
     }
 
     @Override

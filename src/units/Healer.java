@@ -3,6 +3,9 @@ package units;
 import java.awt.*;
 
 import javax.swing.ImageIcon;
+import actions.LightDrive;
+import actions.Sanctification;
+import actions.APromiseToLife;
 
 public class Healer extends Unit {
 
@@ -17,7 +20,8 @@ public class Healer extends Unit {
         this.atk = 130;
         this.magicAtk = 200;
         this.def = 540;
-        this.energy = 3;
+        this.energy = 2;
+        this.maxEnergy = 4;
 
         this.moveRange = 2;
         this.attackRange = 1;
@@ -47,6 +51,10 @@ public class Healer extends Unit {
             "<html><b>A Promise to Life</b>" + "<br>"
             + "Eleanor heals all allies an amount equal to 40% of Eleanor’s Max HP." 
         ;
+        
+        this.actions.add(new LightDrive());
+        this.actions.add(new Sanctification());
+        this.actions.add(new APromiseToLife());
     }
 
     @Override

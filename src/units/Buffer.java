@@ -1,8 +1,11 @@
 package units;
 
 import java.awt.*;
-
 import javax.swing.ImageIcon;
+
+import actions.ForbiddenKnowledge;
+import actions.Enlightenment;
+import actions.ThePathToSolitude;
 
 public class Buffer extends Unit {
 
@@ -17,7 +20,8 @@ public class Buffer extends Unit {
         this.atk = 250;
         this.magicAtk = 300;
         this.def = 270;
-        this.energy = 6;
+        this.energy = 2;
+        this.maxEnergy = 6;
 
         this.moveRange = 2;
         this.attackRange = 1;
@@ -33,20 +37,28 @@ public class Buffer extends Unit {
             256, 256, Image.SCALE_SMOOTH
         );
 
-        this.basicDesc = 
-            "<html><b>Forbidden Knowledge</b>" + "<br>"
-            + "Genisis Sage recalls the falsifying prophecy and redirects it to one designated enemy dealing 60% of his attack plus 60% of his magic attack."
-        ;
+        // === SKILL DESCRIPTIONS (UI) ===
+        this.basicDesc =
+            "<html><b>Forbidden Knowledge</b><br>"
+            + "Genesis Sage recalls the falsifying prophecy and redirects it to one designated enemy "
+            + "dealing 60% of his attack plus 60% of his magic attack.";
 
         this.skillDesc =
-            "<html><b>Enlightenment</b>" + "<br>"
-            + "Genisis harnesses the world’s truth and guides it to one designated ally. If the target ally is a fighter, have their attack increase by 200% of Genisis attack. If the target ally is a buffer, have their speed increase to 30% of its original value. If the character is a mage, have their magic attack increase to 140% of its original value. If the character is a healer, increase their Max Hp by 900 flat points."
-        ;
-        this.ultimateDesc =
-            "<html><b>The Path to Solitude</b>" + "<br>"
-            + "Genisis calls in the perfect scale of truth and falsehood to one target ally granting them 4 points of energy."
-        ;
+            "<html><b>Enlightenment</b><br>"
+            + "Genesis harnesses the world’s truth and guides it to one designated ally. "
+            + "If the target ally is a fighter, increase attack by 200% of Genesis's attack. "
+            + "If the target ally is a buffer, increase speed to 30% of its original value. "
+            + "If the character is a mage, increase magic attack by 140%. "
+            + "If the character is a healer, increase Max HP by 900.";
 
+        this.ultimateDesc =
+            "<html><b>The Path to Solitude</b><br>"
+            + "Genesis grants one ally 4 points of energy.";
+
+        // === SKILL LOGIC (GAMEPLAY) ===
+        this.actions.add(new ForbiddenKnowledge());
+        this.actions.add(new Enlightenment());
+        this.actions.add(new ThePathToSolitude());
     }
 
     @Override

@@ -1,6 +1,7 @@
 package main;
 
 import units.Unit;
+import actions.Action;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,6 +12,7 @@ public class ActionPanel extends JPanel {
     private JLabel hpLabel;
     private JLabel atkLabel;
     private JLabel defLabel;
+    private JLabel energyLabel;
 
     private JButton moveButton;
     private JButton attackButton;
@@ -32,8 +34,9 @@ public class ActionPanel extends JPanel {
         hpLabel   = new JLabel("HP: -");
         atkLabel  = new JLabel("ATK: -");
         defLabel  = new JLabel("DEF: -");
+        energyLabel = new JLabel("Energy: -");
 
-        for (JLabel l : new JLabel[]{nameLabel, hpLabel, atkLabel, defLabel}) {
+        for (JLabel l : new JLabel[]{nameLabel, hpLabel, atkLabel, defLabel, energyLabel}) {
             l.setForeground(Color.WHITE);
         }
 
@@ -41,6 +44,7 @@ public class ActionPanel extends JPanel {
         statsPanel.add(hpLabel);
         statsPanel.add(atkLabel);
         statsPanel.add(defLabel);
+        statsPanel.add(energyLabel);
 
         // === ACTION BUTTONS ===
         JPanel buttonsPanel = new JPanel();
@@ -59,20 +63,26 @@ public class ActionPanel extends JPanel {
         add(buttonsPanel, BorderLayout.WEST);
 
         // === BUTTON LOGIC ===
+
         moveButton.addActionListener(e -> {
-            if (selectedUnit != null && board != null) {
-                board.setActionMode(Board.ActionMode.MOVE);
-                board.showMoveHighlightsFor(selectedUnit);
-            }
+            if (selectedUnit == null || board == null) return;
+
+            board.setActionMode(Board.ActionMode.MOVE);
+            board.showMoveHighlightsFor(selectedUnit);
         });
+
 
         attackButton.addActionListener(e -> {
-            if (selectedUnit != null && board != null) {
-                board.setActionMode(Board.ActionMode.ATTACK);
-                board.showAttackHighlightsFor(selectedUnit);
-            }
-        });
+            if (selectedUnit == null || board == null) return;
+            if (selectedUnit.actions.isEmpty()) return;
 
+            // ✅ STEP 2: select the unit's basic attack
+            Action action = selectedUnit.actions.get(0);
+            board.selectedAction = action;
+
+            board.setActionMode(Board.ActionMode.ATTACK);
+            board.showAttackHighlightsFor(selectedUnit);
+        });
     }
 
     public void setBoard(Board board) {
@@ -96,6 +106,7 @@ public class ActionPanel extends JPanel {
             defLabel.setText("DEF: " + u.def);
             moveButton.setEnabled(true);
             attackButton.setEnabled(true);
+            energyLabel.setText("Energy: " + u.energy + " / " + u.maxEnergy);
         }
     }
 

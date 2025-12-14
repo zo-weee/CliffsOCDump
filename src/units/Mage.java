@@ -3,6 +3,9 @@ package units;
 import java.awt.*;
 
 import javax.swing.ImageIcon;
+import actions.QueensTorment;
+import actions.AquaDetention;
+import actions.LeviathanWill;
 
 public class Mage extends Unit {
 
@@ -16,8 +19,8 @@ public class Mage extends Unit {
         this.curHp = maxHp;
         this.atk = 60;
         this.magicAtk = 650;
-        this.def = 200;
-        this.energy = 6;
+        this.energy = 2;
+        this.maxEnergy = 6;
 
         this.moveRange = 2;
         this.attackRange = 2;
@@ -47,6 +50,10 @@ public class Mage extends Unit {
             "<html><b>Leviathan's Will</b>" + "<br>"
             + "Rokorou summons the destructiveness of a black hole dealing 350% of his attack + 100% of his magic attack to all enemies on the battlefield" 
         ;
+        
+        this.actions.add(new QueensTorment());
+        this.actions.add(new AquaDetention());
+        this.actions.add(new LeviathanWill());
     }
 
     @Override
