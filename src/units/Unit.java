@@ -118,5 +118,16 @@ public abstract class Unit {
         }
     }
 
+    public Unit createCopy() {
+        try {
+            return this.getClass()
+                    .getConstructor(int.class, int.class)
+                    .newInstance(this.x, this.y);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to copy unit", e);
+        }
+    }
+
+
 
 }

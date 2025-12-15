@@ -5,6 +5,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+
 import javax.swing.*;
 import units.SelectedTeam;
 
@@ -77,21 +79,11 @@ public class Menu extends JPanel {
         this.add(exitButton, gbc);
 
         startButton.addActionListener(e -> {
-            if (SelectedTeam.team != null && SelectedTeam.team.size() == 4) {
-                GameScreen game = new GameScreen(frame, SelectedTeam.team);
-                frame.setContentPane(game);
-                frame.pack();
-                frame.revalidate();
-                frame.repaint();
-
-            }
-            else {
-                CharacterSelect cs = new CharacterSelect(frame);
-                frame.setContentPane(cs);
-                frame.pack();
-                frame.revalidate();
-                frame.repaint();
-            }
+            // Start fresh Player 1 selection
+            frame.setContentPane(new CharacterSelect(frame, 1, new ArrayList<>()));
+            frame.pack();
+            frame.revalidate();
+            frame.repaint();
         });
 
         startButton.addMouseListener(new MouseAdapter() {
