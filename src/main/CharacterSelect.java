@@ -17,6 +17,10 @@ public class CharacterSelect extends JPanel {
     JButton addToTeamBtn;
     JButton startGameBtn;
 
+    private Image background;
+    Font headerfont;
+    Font pfont;
+
     JLabel[] teamSlots = new JLabel[4];
     ArrayList<Unit> chosenUnits = new ArrayList<>();
     Unit selectedUnit = null;
@@ -36,6 +40,8 @@ public class CharacterSelect extends JPanel {
 
         int width = cols * tileSize + offsetX * 2;
         int height = rows * tileSize + offsetY * 2;
+
+        background = new ImageIcon("src/assets/notsotempbg.png").getImage();
 
         this.setPreferredSize(new Dimension(width, height));
 
@@ -62,12 +68,12 @@ public class CharacterSelect extends JPanel {
         }
 
         JPanel centerPanel = new JPanel(new BorderLayout());
-        centerPanel.setBackground(Color.BLACK);
+        centerPanel.setOpaque(false);
         centerPanel.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
         this.add(centerPanel, BorderLayout.CENTER);
 
         JPanel infoTop = new JPanel(new BorderLayout());
-        infoTop.setBackground(Color.BLACK);
+        infoTop.setOpaque(false);
 
         bigPortrait = new JLabel();
         bigPortrait.setPreferredSize(new Dimension(BIG_PORTRAIT_SIZE, BIG_PORTRAIT_SIZE));
@@ -75,7 +81,7 @@ public class CharacterSelect extends JPanel {
         infoTop.add(bigPortrait, BorderLayout.WEST);
 
         JPanel statsPanel = new JPanel();
-        statsPanel.setBackground(Color.BLACK);
+        statsPanel.setOpaque(false);
         statsPanel.setBorder(BorderFactory.createEmptyBorder(70, 40, 0, 0));
         statsPanel.setLayout(new BoxLayout(statsPanel, BoxLayout.Y_AXIS));
 
@@ -94,11 +100,11 @@ public class CharacterSelect extends JPanel {
         centerPanel.add(infoTop, BorderLayout.NORTH);
 
         JPanel infoBottom = new JPanel(new BorderLayout());
-        infoBottom.setBackground(Color.BLACK);
+        infoBottom.setOpaque(false);
         infoBottom.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 20));
 
         JPanel skillsBox = new JPanel();
-        skillsBox.setBackground(Color.BLACK);
+        skillsBox.setOpaque(false);
         skillsBox.setLayout(new BoxLayout(skillsBox, BoxLayout.Y_AXIS));
 
         basicLabel = new JLabel();
@@ -142,11 +148,11 @@ public class CharacterSelect extends JPanel {
         });
 
         JPanel bottomContainer = new JPanel(new BorderLayout());
-        bottomContainer.setBackground(Color.BLACK);
+        bottomContainer.setOpaque(false);
         bottomContainer.setBorder(BorderFactory.createEmptyBorder(5,20,10,20));
 
         JPanel bottomPanel = new JPanel();
-        bottomPanel.setBackground(Color.BLACK);
+        bottomPanel.setOpaque(false);
         bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.Y_AXIS));
 
         JLabel teamHeader = new JLabel("YOUR TEAM MEMBERS:");
@@ -187,6 +193,15 @@ public class CharacterSelect extends JPanel {
         bottomContainer.add(startPanel, BorderLayout.EAST);
 
         this.add(bottomContainer, BorderLayout.SOUTH);
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        if (background != null) {
+            g.drawImage(background, 0, 0, this);
+        }
     }
 
     private void showUnitInfo(Unit u) {
