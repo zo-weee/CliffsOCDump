@@ -51,20 +51,36 @@ public class Healer extends Unit {
             "<html><b>A Promise to Life</b>" + "<br>"
             + "Eleanor heals all allies an amount equal to 40% of Eleanor’s Max HP." 
         ;
-        
+
         this.actions.add(new LightDrive());
         this.actions.add(new Sanctification());
         this.actions.add(new APromiseToLife());
+        
+        walkFrames = new Image[8];
+
+        for (int i = 0; i < 8; i++) {
+            walkFrames[i] = new ImageIcon(
+                "src/assets/Healer/walk/GE" + (i + 1) + ".png"
+            ).getImage();
+        }
     }
 
     @Override
     public void draw(Graphics2D g2d, int tileSize, int offsetX, int offsetY) {
-        g2d.setColor(Color.GREEN);
-        g2d.fillOval(
-            offsetX + x * tileSize + 10,
-            offsetY + y * tileSize + 10,
-            tileSize - 20,
-            tileSize - 20
+
+        Image frame = (isWalking && walkFrames != null)
+            ? walkFrames[walkFrameIndex]
+            : walkFrames[0];
+
+        int padding = 6;
+
+        g2d.drawImage(
+            frame,
+            offsetX + x * tileSize + padding,
+            offsetY + y * tileSize + padding,
+            tileSize - padding * 2,
+            tileSize - padding * 2,
+            null
         );
     }
 }

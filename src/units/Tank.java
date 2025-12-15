@@ -51,20 +51,36 @@ public class Tank extends Unit {
             "<html><b>Absolute Tyranny</b>" + "<br>"
             + "Cerberus increases all allies' defenses equal to 60% + 68 of his defense." 
         ;
-        
+
         this.actions.add(new LoneWolfCharge());
         this.actions.add(new DevilsMaw());
         this.actions.add(new AbsoluteTyranny());
+
+        walkFrames = new Image[5];
+
+        for (int i = 0; i < 5; i++) {
+            walkFrames[i] = new ImageIcon(
+                "src/assets/Tank/walk/C" + (i + 1) + ".png"
+            ).getImage();
+        }
     }
 
     @Override
     public void draw(Graphics2D g2d, int tileSize, int offsetX, int offsetY) {
-        g2d.setColor(Color.ORANGE);
-        g2d.fillOval(
-            offsetX + x * tileSize + 10,
-            offsetY + y * tileSize + 10,
-            tileSize - 20,
-            tileSize - 20
+
+        Image frame = (isWalking && walkFrames != null)
+            ? walkFrames[walkFrameIndex]
+            : walkFrames[0];
+
+        int padding = 6;
+
+        g2d.drawImage(
+            frame,
+            offsetX + x * tileSize + padding,
+            offsetY + y * tileSize + padding,
+            tileSize - padding * 2,
+            tileSize - padding * 2,
+            null
         );
     }
 }
