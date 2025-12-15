@@ -55,9 +55,9 @@ public class Fighter extends Unit {
         this.actions.add(new ShadowsRise());
         this.actions.add(new EventHorizon());
 
-        walkFrames = new Image[7];
+        walkFrames = new Image[8];
 
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 8; i++) {
             walkFrames[i] = new ImageIcon(
                 "src/assets/Fighter/walk/RK" + (i + 1) + ".png"
             ).getImage();
@@ -82,6 +82,5 @@ public class Fighter extends Unit {
             null
         );
     }
-
     
 }
