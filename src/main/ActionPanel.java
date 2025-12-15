@@ -10,6 +10,7 @@ public class ActionPanel extends JPanel {
     private JLabel nameLabel;
     private JLabel hpLabel;
     private JLabel atkLabel;
+    private JLabel magicAtkLabel;
     private JLabel defLabel;
     private JLabel energyLabel;
 
@@ -43,16 +44,18 @@ public class ActionPanel extends JPanel {
         nameLabel = new JLabel("No unit selected");
         hpLabel   = new JLabel("HP: -");
         atkLabel  = new JLabel("ATK: -");
+        magicAtkLabel  = new JLabel("MAGIC ATK: -");
         defLabel  = new JLabel("DEF: -");
         energyLabel = new JLabel("Energy: -");
 
-        for (JLabel l : new JLabel[]{nameLabel, hpLabel, atkLabel, defLabel, energyLabel}) {
+        for (JLabel l : new JLabel[]{nameLabel, hpLabel, atkLabel, magicAtkLabel, defLabel, energyLabel}) {
             l.setForeground(Color.WHITE);
         }
 
         statsPanel.add(nameLabel);
         statsPanel.add(hpLabel);
         statsPanel.add(atkLabel);
+        statsPanel.add(magicAtkLabel);
         statsPanel.add(defLabel);
         statsPanel.add(energyLabel);
 
@@ -84,15 +87,46 @@ public class ActionPanel extends JPanel {
 
         attackButton.addActionListener(e -> {
             if (selectedUnit == null || board == null) return;
-            if (selectedUnit.actions.isEmpty()) return;
+            if (selectedUnit.hasActedThisTurn) return;
+            if (selectedUnit.team != board.currentTurn) return;
 
-            // ✅ STEP 2: select the unit's basic attack
-            Action action = selectedUnit.actions.get(0);
-            board.selectedAction = action;
+            if (selectedUnit.actions == null || selectedUnit.actions.isEmpty()) return;
 
-            board.setActionMode(Board.ActionMode.ATTACK);
-            board.showAttackHighlightsFor(selectedUnit);
+            JPopupMenu menu = new JPopupMenu();
+
+            for (int i = 0; i < selectedUnit.actions.size(); i++) {
+                Action a = selectedUnit.actions.get(i);
+
+                String prefix;
+                if (i == 0) {
+                    prefix = "Basic: ";
+                } else if (i == 1) {
+                    prefix = "Skill: ";
+                } else if (i == 2) {
+                    prefix = "Ultimate: ";
+                } else {
+                    prefix = "";
+                }
+
+                JMenuItem item = new JMenuItem(
+                    prefix + a.getName() + " (" + a.getEnergyCost() + ")"
+                );
+
+                item.setEnabled(selectedUnit.energy >= a.getEnergyCost());
+
+                item.addActionListener(ev -> {
+                    board.selectedAction = a;
+                    board.setActionMode(Board.ActionMode.ATTACK);
+                    board.showAttackHighlightsFor(selectedUnit);
+                });
+
+                menu.add(item);
+            }
+
+            menu.show(attackButton, 0, attackButton.getHeight());
         });
+
+
     }
 
     public void setBoard(Board board) {
@@ -112,6 +146,7 @@ public class ActionPanel extends JPanel {
             nameLabel.setText("No unit selected");
             hpLabel.setText("HP: -");
             atkLabel.setText("ATK: -");
+            magicAtkLabel.setText("MAGIC ATK: -");
             defLabel.setText("DEF: -");
             moveButton.setEnabled(false);
             attackButton.setEnabled(false);
@@ -119,6 +154,7 @@ public class ActionPanel extends JPanel {
             nameLabel.setText(u.name);
             hpLabel.setText("HP: " + u.curHp + " / " + u.maxHp);
             atkLabel.setText("ATK: " + u.atk);
+            magicAtkLabel.setText("MAGIC ATK: " + u.magicAtk);
             defLabel.setText("DEF: " + u.def);
             moveButton.setEnabled(true);
             attackButton.setEnabled(true);
