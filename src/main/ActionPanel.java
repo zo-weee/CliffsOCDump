@@ -1,13 +1,12 @@
 package main;
 
-import units.Unit;
 import actions.Action;
-
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
+import units.Unit;
 
 public class ActionPanel extends JPanel {
-
+    private JLabel turnLabel;
     private JLabel nameLabel;
     private JLabel hpLabel;
     private JLabel atkLabel;
@@ -24,6 +23,17 @@ public class ActionPanel extends JPanel {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         setBackground(Color.DARK_GRAY);
+
+        turnLabel = new JLabel("Turn: Player 1 (ALLY)");
+        turnLabel.setForeground(Color.WHITE);
+        turnLabel.setFont(new Font("Arial", Font.BOLD, 16));
+
+        JPanel turnPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        turnPanel.setOpaque(false);
+        turnPanel.add(turnLabel);
+
+        add(turnPanel, BorderLayout.NORTH);
+
 
         // === STATS AREA ===
         JPanel statsPanel = new JPanel();
@@ -88,6 +98,12 @@ public class ActionPanel extends JPanel {
     public void setBoard(Board board) {
         this.board = board;
     }
+
+    public void setCurrentTurn(units.Unit.Team team) {
+        String player = (team == units.Unit.Team.ALLY) ? "Player 1" : "Player 2";
+        turnLabel.setText("Turn: " + player + " (" + team + ")");
+    }
+
 
     public void setSelectedUnit(Unit u) {
         this.selectedUnit = u;

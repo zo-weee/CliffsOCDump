@@ -16,32 +16,46 @@ public class Input extends MouseAdapter {
     @Override
     public void mousePressed(MouseEvent e) {
 
+        if (board.currentMode != Board.ActionMode.NONE) {
+            return;
+        }
+
         int col = (e.getX() - board.offsetX) / board.tileSize;
         int row = (e.getY() - board.offsetY) / board.tileSize;
 
         Unit clickedUnit = board.getUnit(col, row);
 
-        // 🛑 stop animation of previously selected unit
+        // stop animation of previously selected unit
         if (board.selectedUnit != null) {
             board.selectedUnit.isWalking = false;
             board.selectedUnit.walkFrameIndex = 0;
         }
 
-        // === NORMAL SELECTION ===
         if (clickedUnit != null) {
-            System.out.println("PRESSED: Unit selected at Grid (" + col + ", " + row + ")");
 
+            // ✅ Hotseat rule: only select units for the current team
+            if (clickedUnit.team != board.currentTurn) {
+                System.out.println("Not your turn. Current turn: " + board.currentTurn);
+                return;
+            }
+
+            // ✅ Can't reuse a unit that already acted this team-turn
+            if (clickedUnit.hasActedThisTurn) {
+                System.out.println("This unit already acted this turn.");
+                return;
+            }
+
+            System.out.println("PRESSED: Unit selected at Grid (" + col + ", " + row + ")");
             board.onUnitSelected(clickedUnit);
 
-            // 🔥 START WALK ANIMATION
+            // start walk animation (your current behavior)
             clickedUnit.isWalking = true;
 
         } else {
-            if (board.currentMode == Board.ActionMode.NONE) {
-                board.clearSelection();
-            }
+            board.clearSelection();
         }
     }
+
 
     @Override
     public void mouseReleased(MouseEvent e) {
@@ -77,7 +91,7 @@ public class Input extends MouseAdapter {
 
             board.setActionMode(Board.ActionMode.NONE);
 
-            if (board.allAlliesActed()) {
+            if (board.allCurrentTeamActed()) {
                 board.endTurn();
             }
             return;
@@ -110,7 +124,7 @@ public class Input extends MouseAdapter {
             board.selectedAction = null;
             board.setActionMode(Board.ActionMode.NONE);
 
-            if (board.allAlliesActed()) {
+            if (board.allCurrentTeamActed()) {
                 board.endTurn();
             }
         }

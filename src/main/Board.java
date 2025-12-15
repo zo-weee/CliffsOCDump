@@ -1,19 +1,20 @@
 package main;
 
-import units.Unit;
 import actions.Action;
+import units.Unit;
 import units.Mage;
 
 import javax.swing.JPanel;
+import javax.swing.Timer;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Stroke;
 import java.util.ArrayList;
 import java.util.List;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class Board extends JPanel {
 
@@ -23,24 +24,30 @@ public class Board extends JPanel {
         ATTACK
     }
 
-    public Action selectedAction;
+    // ===== Turn / Hotseat =====
+    public Unit.Team currentTurn = Unit.Team.ALLY; // Player 1 (ALLY) starts
 
+    // ===== Action selection =====
+    public Action selectedAction;
     public ActionMode currentMode = ActionMode.NONE;
 
+    // ===== Board dimensions =====
     public int tileSize = 50;
-    int cols = 12;
-    int rows = 12;
+    int cols = 10;
+    int rows = 10;
 
     public int offsetX = 40;
     public int offsetY = 40;
 
+    // ===== Units / UI =====
     ArrayList<Unit> units;
-    private List<Point> highlights = new ArrayList<>();
-
     public Unit selectedUnit;
     private ActionPanel actionPanel;
 
-    // optional convenience ctor if old code uses it
+    // ===== Highlights =====
+    private List<Point> highlights = new ArrayList<>();
+
+    // optional convenience ctor if old code uses Board(selectedUnits)
     public Board(ArrayList<Unit> selectedUnits) {
         this(selectedUnits, null);
     }
@@ -54,48 +61,22 @@ public class Board extends JPanel {
         this.setPreferredSize(new Dimension(width, height));
         this.setBackground(Color.BLACK);
 
-        int[] startX = {3, 4, 5, 6};
-        int startY = 10;
+        // Place ALLY and ENEMY units in different rows (simple spawn)
+        placeInitialUnits();
 
-        for (int i = 0; i < units.size() && i < startX.length; i++) {
-            units.get(i).setPosition(startX[i], startY);
+        // TEMP: If you don't pass enemies in yet, you can spawn dummy enemies.
+        // Comment this out once you have real Player 2 selection.
+        if (!hasAnyEnemies()) {
+            spawnDummyEnemies();
         }
-
-        // === TEMP DUMMY ENEMIES FOR TESTING ===
-        Mage e1 = new Mage(4, 8);
-        e1.name = "Dummy Enemy 1";
-        e1.team = Unit.Team.ENEMY;
-        e1.maxHp = 800;
-        e1.curHp = 800;
-        e1.atk = 120;
-        e1.def = 0;
-
-        Mage e2 = new Mage(6, 8);
-        e2.name = "Dummy Enemy 2";
-        e2.team = Unit.Team.ENEMY;
-        e2.maxHp = 1000;
-        e2.curHp = 1000;
-        e2.atk = 140;
-        e2.def = 0;
-
-        Mage e3 = new Mage(8, 8);
-        e3.name = "Dummy Enemy 3";
-        e3.team = Unit.Team.ENEMY;
-        e3.maxHp = 1200;
-        e3.curHp = 1200;
-        e3.atk = 160;
-        e3.def = 0;
-
-        // IMPORTANT: add to same units list
-        units.add(e1);
-        units.add(e2);
-        units.add(e3);
 
         if (this.actionPanel != null) {
             this.actionPanel.setBoard(this);
+            this.actionPanel.setCurrentTurn(currentTurn); // show initial turn
         }
 
-        new javax.swing.Timer(16, e -> {   // ~60 FPS
+        // Animation timer (~60 FPS)
+        new Timer(16, e -> {
             for (Unit u : units) {
                 u.updateAnimation();
             }
@@ -103,7 +84,70 @@ public class Board extends JPanel {
         }).start();
     }
 
-    // ==== Queries ====
+    // ==============================
+    // Spawn / Setup
+    // ==============================
+
+    private void placeInitialUnits() {
+        int[] startX = {3, 4, 5, 6};
+
+        int allyRow = rows - 2;
+        int enemyRow = 1;
+
+        int allyIndex = 0;
+        int enemyIndex = 0;
+
+        for (Unit u : units) {
+            if (u.team == Unit.Team.ENEMY) {
+                if (enemyIndex < startX.length) {
+                    u.setPosition(startX[enemyIndex], enemyRow);
+                    enemyIndex++;
+                }
+            } else {
+                // default to ALLY if unset
+                if (u.team == null) u.team = Unit.Team.ALLY;
+
+                if (allyIndex < startX.length) {
+                    u.setPosition(startX[allyIndex], allyRow);
+                    allyIndex++;
+                }
+            }
+
+            // new game: ensure units haven't acted yet
+            u.hasActedThisTurn = false;
+        }
+    }
+
+    private boolean hasAnyEnemies() {
+        for (Unit u : units) {
+            if (u.team == Unit.Team.ENEMY) return true;
+            }
+            return false;
+        }
+
+        private void spawnDummyEnemies() {
+        Mage e1 = new Mage(0, 0);
+        Mage e2 = new Mage(0, 0);
+        Mage e3 = new Mage(0, 0);
+
+        e1.name = "Dummy Enemy 1";
+        e2.name = "Dummy Enemy 2";
+        e3.name = "Dummy Enemy 3";
+
+        e1.team = Unit.Team.ENEMY;
+        e2.team = Unit.Team.ENEMY;
+        e3.team = Unit.Team.ENEMY;
+
+        units.add(e1);
+        units.add(e2);
+        units.add(e3);
+
+        placeInitialUnits();
+    }
+
+    // ==============================
+    // Queries
+    // ==============================
 
     public Unit getUnit(int col, int row) {
         for (Unit u : this.units) {
@@ -114,7 +158,21 @@ public class Board extends JPanel {
         return null;
     }
 
-    // ==== Move / Attack execution ====
+    private boolean isInsideBoard(int col, int row) {
+        return col >= 0 && col < cols && row >= 0 && row < rows;
+    }
+
+    // Can the current player click/select this unit right now?
+    public boolean isClickable(Unit u) {
+        return u != null
+                && u.isAlive()
+                && u.team == currentTurn
+                && !u.hasActedThisTurn;
+    }
+
+    // ==============================
+    // Move / Attack execution
+    // ==============================
 
     public void makeMove(Move move) {
         if (move.block != null) {
@@ -126,12 +184,14 @@ public class Board extends JPanel {
 
     public void performAttack(Unit attacker, int targetCol, int targetRow) {
         Unit target = getUnit(targetCol, targetRow);
+
+        // ✅ prevent NullPointer + self-hit
+        if (target == null || target == attacker) return;
+
         if (attacker.team == target.team) {
             System.out.println("Cannot attack ally.");
             return;
         }
-
-        if (target == null || target == attacker) return;
 
         int rawDamage = attacker.atk;
         int finalDamage = Math.max(0, rawDamage - target.def);
@@ -139,8 +199,8 @@ public class Board extends JPanel {
         target.takeDamage(finalDamage);
 
         System.out.println(
-            attacker.name + " hits " + target.name +
-            " for " + finalDamage + " damage (HP left: " + target.curHp + ")"
+                attacker.name + " hits " + target.name +
+                        " for " + finalDamage + " damage (HP left: " + target.curHp + ")"
         );
 
         if (!target.isAlive()) {
@@ -151,7 +211,20 @@ public class Board extends JPanel {
         repaint();
     }
 
-    // ==== Highlights & selection ====
+    public void applyDamage(Unit target, int damage) {
+        int finalDamage = Math.max(0, damage - target.def);
+        target.takeDamage(finalDamage);
+
+        if (!target.isAlive()) {
+            units.remove(target);
+        }
+
+        repaint();
+    }
+
+    // ==============================
+    // Highlights / selection / modes
+    // ==============================
 
     public void setHighlights(List<Point> tiles) {
         this.highlights = tiles;
@@ -165,9 +238,7 @@ public class Board extends JPanel {
 
     public void setActionMode(ActionMode mode) {
         this.currentMode = mode;
-        if (mode == ActionMode.NONE) {
-            clearHighlights();
-        }
+        clearHighlights(); // always clear old highlights when mode changes
     }
 
     public void onUnitSelected(Unit u) {
@@ -175,15 +246,18 @@ public class Board extends JPanel {
         if (actionPanel != null) {
             actionPanel.setSelectedUnit(u);
         }
+        repaint();
     }
 
     public void clearSelection() {
         this.selectedUnit = null;
         this.currentMode = ActionMode.NONE;
+        this.selectedAction = null;
         clearHighlights();
         if (actionPanel != null) {
             actionPanel.clearSelection();
         }
+        repaint();
     }
 
     public void showMoveHighlightsFor(Unit unitXY) {
@@ -197,14 +271,14 @@ public class Board extends JPanel {
                 int targetCol = startCol + dx;
                 int targetRow = startRow + dy;
 
-                if (targetCol < 0 || targetCol >= cols) continue;
-                if (targetRow < 0 || targetRow >= rows) continue;
+                if (!isInsideBoard(targetCol, targetRow)) continue;
 
                 if (ValidateMove.isMoveValid(this, unitXY, targetCol, targetRow)) {
                     tiles.add(new Point(targetCol, targetRow));
                 }
             }
         }
+
         setHighlights(tiles);
     }
 
@@ -219,22 +293,64 @@ public class Board extends JPanel {
                 int targetCol = startCol + dx;
                 int targetRow = startRow + dy;
 
-                if (dx == 0 && dy == 0) continue; // can't attack self
-                if (targetCol < 0 || targetCol >= cols) continue;
-                if (targetRow < 0 || targetRow >= rows) continue;
+                if (dx == 0 && dy == 0) continue;
+                if (!isInsideBoard(targetCol, targetRow)) continue;
 
-                // only highlight tiles that actually have a unit to hit
                 Unit target = getUnit(targetCol, targetRow);
                 if (target != null && target.team != unitXY.team) {
                     tiles.add(new Point(targetCol, targetRow));
                 }
-
             }
         }
+
         setHighlights(tiles);
     }
 
-    // ==== Painting ====
+    // ==============================
+    // Turn logic (hotseat)
+    // ==============================
+
+    public boolean allCurrentTeamActed() {
+        for (Unit u : units) {
+            if (u.team == currentTurn && u.isAlive() && !u.hasActedThisTurn) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void endTurn() {
+        // process statuses only for the team that just finished
+        for (Unit u : units) {
+            if (u.team == currentTurn && u.isAlive()) {
+                u.processStatuses(this);
+            }
+        }
+
+        // swap team
+        currentTurn = (currentTurn == Unit.Team.ALLY) ? Unit.Team.ENEMY : Unit.Team.ALLY;
+
+        // reset only the incoming team's "acted" flags
+        for (Unit u : units) {
+            if (u.team == currentTurn && u.isAlive()) {
+                u.resetTurn(); // sets hasActedThisTurn = false
+            }
+        }
+
+        // clear selection & UI
+        clearSelection();
+
+        System.out.println("=== " + currentTurn + " TURN ===");
+        if (actionPanel != null) {
+            actionPanel.setCurrentTurn(currentTurn);
+        }
+
+        repaint();
+    }
+
+    // ==============================
+    // Painting
+    // ==============================
 
     @Override
     public void paintComponent(Graphics g) {
@@ -242,9 +358,14 @@ public class Board extends JPanel {
 
         Graphics2D g2d = (Graphics2D) g;
 
-        // board background
+        // board background (white square)
         g2d.setColor(Color.WHITE);
         g2d.fillRect(offsetX, offsetY, cols * tileSize, rows * tileSize);
+
+        // draw turn text in black margin
+        g2d.setColor(Color.WHITE);
+        String player = (currentTurn == Unit.Team.ALLY) ? "Player 1" : "Player 2";
+        g2d.drawString("Turn: " + player + " (" + currentTurn + ")", 10, 20);
 
         // grid
         g2d.setColor(Color.BLACK);
@@ -257,13 +378,26 @@ public class Board extends JPanel {
             g2d.drawLine(x, offsetY, x, offsetY + rows * tileSize);
         }
 
-        // highlights: blue for move, red for attack
+        // ✅ Highlight clickable units (green) ONLY when not targeting a tile
+        if (currentMode == ActionMode.NONE) {
+            for (Unit u : units) {
+                if (isClickable(u)) {
+                    int x = offsetX + u.getX() * tileSize;
+                    int y = offsetY + u.getY() * tileSize;
+
+                    g2d.setColor(new Color(0, 255, 0, 70)); // translucent green
+                    g2d.fillRect(x + 1, y + 1, tileSize - 2, tileSize - 2);
+                }
+            }
+        }
+
+        // move/attack highlight tiles
         if (currentMode == ActionMode.MOVE) {
             g2d.setColor(new Color(0, 0, 255, 80));
         } else if (currentMode == ActionMode.ATTACK) {
             g2d.setColor(new Color(255, 0, 0, 80));
         } else {
-            g2d.setColor(new Color(0, 0, 255, 80)); // default
+            g2d.setColor(new Color(0, 0, 255, 80));
         }
 
         for (Point p : highlights) {
@@ -276,42 +410,25 @@ public class Board extends JPanel {
         for (Unit u : units) {
             u.draw(g2d, tileSize, offsetX, offsetY);
         }
-    }
 
-    public void applyDamage(Unit target, int damage) {
-        int finalDamage = Math.max(0, damage - target.def);
-        target.takeDamage(finalDamage);
+        // ✅ Selected unit border (yellow)
+        if (selectedUnit != null) {
+            int x = offsetX + selectedUnit.getX() * tileSize;
+            int y = offsetY + selectedUnit.getY() * tileSize;
 
-        if (!target.isAlive()) {
-            units.remove(target);
+            Stroke old = g2d.getStroke();
+            g2d.setColor(Color.YELLOW);
+            g2d.setStroke(new BasicStroke(3));
+            g2d.drawRect(x + 2, y + 2, tileSize - 4, tileSize - 4);
+            g2d.setStroke(old);
         }
-
-        repaint();
     }
 
-    public void endTurn() {
-        for (Unit u : units) {
-            u.processStatuses(this);   // 🔥 delayed effects trigger here
-            u.resetTurn();
-        }
-        System.out.println("New turn started.");
-        repaint();
-    }
-
-
-    public boolean allAlliesActed() {
-        for (Unit u : units) {
-            if (u.team == Unit.Team.ALLY && !u.hasActedThisTurn) {
-                return false;
-            }
-        }
-        return true;
-    }
+    // ==============================
+    // Misc
+    // ==============================
 
     public ArrayList<Unit> getUnits() {
         return units;
     }
-
-    
-
 }
