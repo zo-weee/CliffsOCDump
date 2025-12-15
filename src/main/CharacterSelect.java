@@ -1,8 +1,8 @@
 package main;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import javax.swing.*;
 import units.*;
 
 public class CharacterSelect extends JPanel {
