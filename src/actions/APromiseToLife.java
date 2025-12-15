@@ -1,5 +1,7 @@
 package actions;
 
+import java.util.ArrayList;
+import java.util.List;
 import main.Board;
 import units.Unit;
 
@@ -11,11 +13,16 @@ public class APromiseToLife implements Action {
         return true;
     }
 
+
     public void execute(Board b, Unit u, int c, int r) {
-        for (Unit t : b.getUnits())
-            if (t.team == u.team) {
+
+        List<Unit> snapshot = new ArrayList<>(b.getUnits());
+
+        for (Unit t : snapshot) {
+            if (t != null && t.isAlive() && t.team != u.team) {
                 t.curHp += (int)(u.maxHp * 0.40);
             }
+        }
     }
 }
 

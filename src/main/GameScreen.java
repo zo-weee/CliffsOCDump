@@ -1,27 +1,31 @@
 package main;
 
-import units.Unit;
-
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import javax.swing.*;
+import units.Unit;
 
 public class GameScreen extends JPanel {
 
     private Board board;
     private ActionPanel actionPanel;
+    private StatusBoard statusBoard;   // ✅ add this
 
     public GameScreen(JFrame frame, ArrayList<Unit> team) {
         setLayout(new BorderLayout());
 
         actionPanel = new ActionPanel();
+        statusBoard = new StatusBoard();              // ✅ create it
+
         board = new Board(team, actionPanel);
+        board.setStatusBoard(statusBoard);            // ✅ wire it
 
         Input inputHandler = new Input(board);
         board.addMouseListener(inputHandler);
         board.addMouseMotionListener(inputHandler);
 
         add(board, BorderLayout.CENTER);
+        add(statusBoard, BorderLayout.EAST);          // ✅ show it on the right
         add(actionPanel, BorderLayout.SOUTH);
     }
 
@@ -33,13 +37,17 @@ public class GameScreen extends JPanel {
         allUnits.addAll(teamP2);
 
         actionPanel = new ActionPanel();
+        statusBoard = new StatusBoard();              // ✅ create it
+
         board = new Board(allUnits, actionPanel);
+        board.setStatusBoard(statusBoard);            // ✅ wire it
 
         Input inputHandler = new Input(board);
         board.addMouseListener(inputHandler);
         board.addMouseMotionListener(inputHandler);
 
         add(board, BorderLayout.CENTER);
+        add(statusBoard, BorderLayout.EAST);          
         add(actionPanel, BorderLayout.SOUTH);
     }
 

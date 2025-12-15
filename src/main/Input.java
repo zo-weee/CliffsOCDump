@@ -100,6 +100,8 @@ public class Input extends MouseAdapter {
         // ================= ATTACK =================
         if (board.currentMode == Board.ActionMode.ATTACK) {
 
+
+
             if (u.hasActedThisTurn) {
                 System.out.println("Unit already acted this turn.");
                 board.setActionMode(Board.ActionMode.NONE);
@@ -112,6 +114,10 @@ public class Input extends MouseAdapter {
                 int cost = board.selectedAction.getEnergyCost();
 
                 if (u.hasEnoughEnergy(cost)) {
+                    board.beginAction(u, board.selectedAction.getName());
+                    board.selectedAction.execute(board, u, targetCol, targetRow);
+                    board.endAction();
+
                     board.selectedAction.execute(board, u, targetCol, targetRow);
                     u.spendEnergy(cost);
                     u.hasActedThisTurn = true;

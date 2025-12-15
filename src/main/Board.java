@@ -47,6 +47,12 @@ public class Board extends JPanel {
     // ===== Highlights =====
     private List<Point> highlights = new ArrayList<>();
 
+    private StatusBoard statusBoard;
+
+    // current “action context” so applyDamage/applyHeal can print who caused it
+    private Unit logActor = null;
+    private String logActionName = null;
+
     // optional convenience ctor if old code uses Board(selectedUnits)
     public Board(ArrayList<Unit> selectedUnits) {
         this(selectedUnits, null);
@@ -175,12 +181,18 @@ public class Board extends JPanel {
     // ==============================
 
     public void makeMove(Move move) {
+        logLine("[" + p(move.u.team) + "] " + move.u.name +
+                " moves! (" + move.og_col + "," + move.og_row + " -> " +
+                move.new_col + "," + move.new_row + ")");
+
         if (move.block != null) {
             this.units.remove(move.block);
         }
+
         move.u.setPosition(move.new_col, move.new_row);
         repaint();
     }
+
 
     public void performAttack(Unit attacker, int targetCol, int targetRow) {
         Unit target = getUnit(targetCol, targetRow);
@@ -212,15 +224,41 @@ public class Board extends JPanel {
     }
 
     public void applyDamage(Unit target, int damage) {
+        if (target == null) return;
+
+        int before = target.curHp;
         int finalDamage = Math.max(0, damage - target.def);
+
         target.takeDamage(finalDamage);
+
+        // Indented effect line
+        String src = (logActor != null) ? ("[" + p(logActor.team) + "] " + logActor.name) : "[System]";
+        logLine("  - " + target.name + " takes " + finalDamage +
+                " dmg (HP: " + target.curHp + "/" + target.maxHp + ")  <" + src + ">");
 
         if (!target.isAlive()) {
             units.remove(target);
+            logLine("    * " + target.name + " was defeated!");
         }
 
         repaint();
     }
+
+    public void applyHeal(Unit target, int healAmount) {
+        if (target == null) return;
+
+        int before = target.curHp;
+        target.curHp = Math.min(target.maxHp, target.curHp + healAmount);
+        int healed = target.curHp - before;
+
+        String src = (logActor != null) ? ("[" + p(logActor.team) + "] " + logActor.name) : "[System]";
+        logLine("  - " + target.name + " healed +" + healed +
+                " (HP: " + target.curHp + "/" + target.maxHp + ")  <" + src + ">");
+
+        repaint();
+    }
+
+
 
     // ==============================
     // Highlights / selection / modes
@@ -346,6 +384,29 @@ public class Board extends JPanel {
         }
 
         repaint();
+    }
+
+    public void setStatusBoard(StatusBoard sb) {
+        this.statusBoard = sb;
+    }
+
+    private String p(Unit.Team team) {
+        return (team == Unit.Team.ALLY) ? "P1" : "P2";
+    }
+
+    private void logLine(String msg) {
+        if (statusBoard != null) statusBoard.log(msg);
+    }
+
+    public void beginAction(Unit actor, String actionName) {
+        this.logActor = actor;
+        this.logActionName = actionName;
+        logLine("[" + p(actor.team) + "] " + actor.name + " performs " + actionName + "!");
+    }
+
+    public void endAction() {
+        this.logActor = null;
+        this.logActionName = null;
     }
 
     // ==============================

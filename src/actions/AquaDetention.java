@@ -1,9 +1,11 @@
 package actions;
 
+import java.util.ArrayList;
+import java.util.List;
 import main.Board;
-import units.Unit;
 import status.DelayedSpellStatus;
 import status.LeviathanWillStatus;
+import units.Unit;
 
 public class AquaDetention implements Action {
     public String getName() { return "Aqua Detention"; }
@@ -18,20 +20,23 @@ public class AquaDetention implements Action {
 
         boolean empowered = u.hasStatus(LeviathanWillStatus.class);
 
+
+
         if (empowered) {
-            // INSTANT, stronger version
-            for (Unit t : b.getUnits()) {
-                if (t.team != u.team) {
+            List<Unit> snapshot = new ArrayList<>(b.getUnits());
+
+            for (Unit t : snapshot) {
+                if (t != null && t.isAlive() && t.team != u.team) {
                     b.applyDamage(t, (int)(u.magicAtk * 1.5));
                 }
             }
         } else {
-            // NORMAL delayed version
             u.def /= 2;
 
             u.addStatus(new DelayedSpellStatus(3, () -> {
-                for (Unit t : b.getUnits()) {
-                    if (t.team != u.team) {
+                List<Unit> snapshot = new ArrayList<>(b.getUnits());
+                for (Unit t : snapshot) {
+                    if (t != null && t.isAlive() && t.team != u.team) {
                         b.applyDamage(t, (int)(u.magicAtk * 1.2));
                     }
                 }

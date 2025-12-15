@@ -1,5 +1,7 @@
 package actions;
 
+import java.util.ArrayList;
+import java.util.List;
 import main.Board;
 import units.Unit;
 
@@ -12,9 +14,12 @@ public class ForbiddenKnowledge implements Action {
     }
 
     public void execute(Board b, Unit u, int c, int r) {
-        for (Unit t : b.getUnits())
+        List<Unit> snapshot = new ArrayList<>(b.getUnits());
+
+        for (Unit t : snapshot) {
             if (t.team != u.team)
                 b.applyDamage(t, (int)(u.atk * 0.6) + (int)(u.magicAtk * 0.6));
+        }
         u.gainEnergy(2);
     }
 }

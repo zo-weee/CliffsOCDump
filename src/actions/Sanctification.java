@@ -14,7 +14,10 @@ public class Sanctification implements Action {
 
     public void execute(Board b, Unit u, int c, int r) {
         Unit t = b.getUnit(c, r);
+        if (t == null) return;
+
         int heal = (int)(u.maxHp * 0.2) + 54;
-        t.curHp = Math.min(t.maxHp, t.curHp + heal);
+        b.applyHeal(t, heal);
     }
+
 }

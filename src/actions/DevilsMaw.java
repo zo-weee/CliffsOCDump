@@ -1,5 +1,7 @@
 package actions;
 
+import java.util.ArrayList;
+import java.util.List;
 import main.Board;
 import units.Unit;
 
@@ -12,9 +14,14 @@ public class DevilsMaw implements Action {
     }
 
     public void execute(Board b, Unit u, int c, int r) {
-        for (Unit t : b.getUnits())
-            if (t.team != u.team)
+        List<Unit> snapshot = new ArrayList<>(b.getUnits());
+
+        for (Unit t : snapshot) {
+            if (t != null && t.isAlive() && t.team != u.team) {
                 b.applyDamage(t, (int)(u.atk * 0.5));
+            }
+        }
+
         u.def = (int)(u.def * 1.3);
     }
 }
