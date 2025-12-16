@@ -20,8 +20,8 @@ public class ShadowsRise implements Action {
         Unit target = board.getUnit(col, row);
         return target != null &&
                target.team != user.team &&
-               Math.abs(user.getX() - col) <= 2 &&
-               Math.abs(user.getY() - row) <= 2;
+               Math.abs(user.getX() - col) <= user.attackRange &&
+               Math.abs(user.getY() - row) <= user.attackRange;
     }
 
     @Override

@@ -18,7 +18,7 @@ public class QueensTorment implements Action {
 
         for (Unit t : snapshot) {
             if (t.isAlive() && t.team != u.team) {
-                b.applyDamage(t, (int)(u.magicAtk * 0.8));
+                b.applyDamage(t, (int)(u.magicAtk * 0.5));
             }
         }  
         u.gainEnergy(2);

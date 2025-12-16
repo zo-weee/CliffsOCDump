@@ -27,6 +27,6 @@ public class LeviathanWill implements Action {
         // Prevent stacking
         if (u.hasStatus(LeviathanWillStatus.class)) return;
 
-        u.addStatus(new LeviathanWillStatus(2));
+        u.addStatus(new LeviathanWillStatus(4));
     }
 }

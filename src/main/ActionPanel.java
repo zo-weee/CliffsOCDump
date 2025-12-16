@@ -123,15 +123,33 @@ public class ActionPanel extends JPanel {
             for (int i = 0; i < selectedUnit.actions.size(); i++) {
                 Action a = selectedUnit.actions.get(i);
 
-                String prefix;
-                if (i == 0) prefix = "Basic: ";
-                else if (i == 1) prefix = "Skill: ";
-                else if (i == 2) prefix = "Ultimate: ";
-                else prefix = "";
+                String label;
+                String desc;
+
+                if (i == 0) {
+                    label = "Basic: " + a.getName();
+                    desc = selectedUnit.basicDesc;
+                } else if (i == 1) {
+                    label = "Skill: " + a.getName();
+                    desc = selectedUnit.skillDesc;
+                } else if (i == 2) {
+                    label = "Ultimate: " + a.getName();
+                    desc = selectedUnit.ultimateDesc;
+                } else {
+                    label = a.getName();
+                    desc = "";
+                }
 
                 JMenuItem item = new JMenuItem(
-                        prefix + a.getName() + " (" + a.getEnergyCost() + ")"
+                    label + " (" + a.getEnergyCost() + ")"
                 );
+
+                // ✅ MULTI-LINE TOOLTIP SUPPORT
+                if (desc != null && !desc.isEmpty()) {
+                    item.setToolTipText(
+                        "<html>" + desc.replace("\n", "<br>") + "</html>"
+                    );
+                }
 
                 item.setEnabled(selectedUnit.energy >= a.getEnergyCost());
 
@@ -143,6 +161,7 @@ public class ActionPanel extends JPanel {
 
                 menu.add(item);
             }
+
 
             menu.show(attackButton, 0, attackButton.getHeight());
         });
