@@ -18,7 +18,7 @@ public class EventHorizon implements Action {
     }
 
     public void execute(Board b, Unit u, int c, int r) {
-        int dmg = (int)(u.atk * 3.5 + u.magicAtk);
+        int dmg = (int)(u.atk * 2.5 + u.magicAtk);
 
         List<Unit> snapshot = new ArrayList<>(b.getUnits());
 

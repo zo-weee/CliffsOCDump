@@ -33,7 +33,7 @@ public class VoidSlash implements Action {
         Unit target = board.getUnit(col, row);
         if (target == null) return;
 
-        int damage = (int)(user.atk * 1.10);
+        int damage = (int)(user.atk * 1.5);
         board.applyDamage(target, damage);
 
         user.gainEnergy(2);
