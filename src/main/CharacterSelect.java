@@ -276,7 +276,7 @@ public class CharacterSelect extends JPanel {
     frame.pack();
     frame.revalidate();
     frame.repaint();
-}
+    }
 
 
     @Override

@@ -1,10 +1,10 @@
 package main;
 
+import audio.MusicPlayer;
 import java.awt.*;
 import java.util.ArrayList;
 import javax.swing.*;
 import units.Unit;
-import audio.MusicPlayer;
 
 public class GameScreen extends JPanel {
 
@@ -31,7 +31,7 @@ public class GameScreen extends JPanel {
         add(actionPanel, BorderLayout.SOUTH);
         
         music = new MusicPlayer();
-        music.play("src/audio/battle.wav", true);
+        music.play(getClass().getResource("/audio/battle.wav"), true);
         music.setVolume(0.7f);
     }
 
@@ -57,7 +57,7 @@ public class GameScreen extends JPanel {
         add(actionPanel, BorderLayout.SOUTH);
 
         music = new MusicPlayer();
-        music.play("src/audio/battle.wav", true);
+        music.play(getClass().getResource("/audio/battle.wav"), true);
         music.setVolume(0.7f);
     }
 
