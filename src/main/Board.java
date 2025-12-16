@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import units.Mage;
 import units.Unit;
+import main.EnvironmentType;
 
 public class Board extends JPanel {
 
@@ -51,10 +52,52 @@ public class Board extends JPanel {
     private Unit logActor = null;
 
     public Board(ArrayList<Unit> selectedUnits) {
-        this(selectedUnits, null);
+        this(selectedUnits, null, EnvironmentType.GRASS);
     }
 
-    public Board(ArrayList<Unit> selectedUnits, ActionPanel actionPanel) {
+
+    private void loadEnvironment(EnvironmentType env) {
+        switch (env) {
+            case GRASS:
+                passableTiles = new Image[]{
+                    new ImageIcon(getClass().getResource("/assets/Environment/env1/pass/grass2.png")).getImage(),
+                    new ImageIcon(getClass().getResource("/assets/Environment/env1/pass/grass3.png")).getImage(),
+                    new ImageIcon(getClass().getResource("/assets/Environment/env1/pass/grass4.png")).getImage()
+                };
+
+                tileBlocked = new ImageIcon(
+                    getClass().getResource("/assets/Environment/env1/block/grass_rock2.png")
+                ).getImage();
+                break;
+
+            case CASTLE:
+                passableTiles = new Image[]{
+                    new ImageIcon(getClass().getResource("/assets/Environment/env2/pass/castle1.png")).getImage(),
+                    new ImageIcon(getClass().getResource("/assets/Environment/env2/pass/castle2.png")).getImage(),
+                    new ImageIcon(getClass().getResource("/assets/Environment/env2/pass/castle3.png")).getImage(),
+                    new ImageIcon(getClass().getResource("/assets/Environment/env2/pass/castle4.png")).getImage()
+                };
+
+                tileBlocked = new ImageIcon(
+                    getClass().getResource("/assets/Environment/env2/block/castle_column2.png")
+                ).getImage();
+                break;
+
+            case ICE:
+                passableTiles = new Image[]{
+                    new ImageIcon(getClass().getResource("/assets/Environment/env3/pass/ice1.png")).getImage(),
+                    new ImageIcon(getClass().getResource("/assets/Environment/env3/pass/ice2.png")).getImage(),
+                    new ImageIcon(getClass().getResource("/assets/Environment/env3/pass/ice3.png")).getImage()
+                };
+
+                tileBlocked = new ImageIcon(
+                    getClass().getResource("/assets/Environment/env3/block/ice_rock.png")
+                ).getImage();
+                break;
+        }
+    }
+
+    public Board( ArrayList<Unit> selectedUnits, ActionPanel actionPanel, EnvironmentType environment) {
 
         this.units = selectedUnits;
         this.actionPanel = actionPanel;
@@ -65,16 +108,7 @@ public class Board extends JPanel {
         this.setBackground(Color.BLACK);
 
         placeInitialUnits();
-
-        passableTiles = new Image[]{
-            new ImageIcon(getClass().getResource("/assets/Environment/env1/pass/grass2.png")).getImage(),
-            new ImageIcon(getClass().getResource("/assets/Environment/env1/pass/grass3.png")).getImage(),
-            new ImageIcon(getClass().getResource("/assets/Environment/env1/pass/grass4.png")).getImage()
-        };
-
-        tileBlocked = new ImageIcon(
-            getClass().getResource("/assets/Environment/env1/block/grass_rock2.png")
-        ).getImage();
+        loadEnvironment(environment);
 
         terrain = new boolean[rows][cols];
         tileImages = new Image[rows][cols];

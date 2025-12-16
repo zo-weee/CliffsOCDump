@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import javax.swing.*;
+import main.EnvironmentSelect;
 
 import audio.MusicPlayer;
 import units.*;
@@ -266,11 +267,12 @@ public class CharacterSelect extends JPanel {
     } else {
         for (Unit u : chosenUnits) {
             u.team = Unit.Team.ENEMY;
-            u.loadWalkSprites();   // 👈 ADD THIS LINE
+            u.loadWalkSprites();
         }
 
-        GameScreen game = new GameScreen(frame, teamP1, chosenUnits);
-        frame.setContentPane(game);
+        frame.setContentPane(
+            new EnvironmentSelect(frame, teamP1, chosenUnits)
+        );
     }
 
     frame.pack();
