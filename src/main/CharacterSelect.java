@@ -37,6 +37,29 @@ public class CharacterSelect extends JPanel {
 
     private static final int BIG_PORTRAIT_SIZE = 256;
 
+    private void removeUnitAt(int index) {
+        if (index < 0 || index >= chosenUnits.size()) return;
+
+        // Remove from data
+        chosenUnits.remove(index);
+
+        // Rebuild UI
+        refreshTeamSlots();
+    }
+
+    private void refreshTeamSlots() {
+        for (int i = 0; i < 4; i++) {
+            if (i < chosenUnits.size()) {
+                Unit u = chosenUnits.get(i);
+                teamSlots[i].setIcon(new ImageIcon(u.picSmall));
+                teamSlots[i].setText("");
+            } else {
+                teamSlots[i].setIcon(null);
+                teamSlots[i].setText("");
+            }
+        }
+    }
+
     static void deboard(JButton b) {
         b.setBorder(BorderFactory.createEmptyBorder());
         b.setBorderPainted(false);
@@ -170,21 +193,38 @@ public class CharacterSelect extends JPanel {
         basicLabel = new JLabel();
         skillLabel = new JLabel();
         ultiLabel = new JLabel();
+
         for (JLabel l : new JLabel[]{basicLabel, skillLabel, ultiLabel}) {
             l.setForeground(Color.WHITE);
         }
 
-        skillsBox.add(basicLabel);
-        skillsBox.add(Box.createVerticalStrut(10));
-        skillsBox.add(skillLabel);
-        skillsBox.add(Box.createVerticalStrut(10));
-        skillsBox.add(ultiLabel);
-        skillsBox.add(Box.createVerticalStrut(20));
-
+        /* ===== ADD BUTTON FIRST ===== */
         addToTeamBtn = new JButton("Add to Team");
         addToTeamBtn.setVisible(false);
         addToTeamBtn.setFont(headerfont);
         addToTeamBtn.setForeground(Color.WHITE);
+
+        /* ===== LAYOUT ORDER ===== */
+        skillsBox.add(Box.createVerticalStrut(25));
+        skillsBox.add(basicLabel);
+        skillsBox.add(Box.createVerticalStrut(18));
+
+        skillsBox.add(skillLabel);
+        skillsBox.add(Box.createVerticalStrut(18));
+
+        skillsBox.add(ultiLabel);
+        skillsBox.add(Box.createVerticalStrut(28));
+
+        skillsBox.setBorder(
+            BorderFactory.createEmptyBorder(
+                8,
+                16,
+                8,
+                16
+            )
+        );
+
+        skillsBox.add(addToTeamBtn);
 
         addToTeamBtn.addActionListener(e -> {
             if (selectedUnit == null) return;
@@ -198,9 +238,8 @@ public class CharacterSelect extends JPanel {
             Unit copy = selectedUnit.createCopy();
             chosenUnits.add(copy);
 
-            int idx = chosenUnits.size() - 1;
-            teamSlots[idx].setIcon(new ImageIcon(selectedUnit.picSmall));
-            teamSlots[idx].setText("");
+            refreshTeamSlots();
+
         });
 
 
@@ -223,7 +262,6 @@ public class CharacterSelect extends JPanel {
             }
         });
 
-        skillsBox.add(addToTeamBtn);
         infoBottom.add(skillsBox, BorderLayout.CENTER);
         centerPanel.add(infoBottom, BorderLayout.CENTER);
 
@@ -269,13 +307,37 @@ public class CharacterSelect extends JPanel {
         slotsRow.setOpaque(false);
 
         for (int i = 0; i < 4; i++) {
+            final int index = i;
+
             JLabel slot = new JLabel("", SwingConstants.CENTER);
             slot.setPreferredSize(new Dimension(120, 120));
             slot.setOpaque(false);
-            // slot.setForeground(Color.WHITE);
+
+            slot.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    removeUnitAt(index);
+                }
+
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    slot.setBorder(
+                        BorderFactory.createLineBorder(
+                            new Color(200, 80, 80), 2
+                        )
+                    );
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    slot.setBorder(null);
+                }
+            });
+
             teamSlots[i] = slot;
             slotsRow.add(slot);
         }
+
 
         bottomContainer.add(slotsRow, BorderLayout.CENTER);
         bottomContainer.add(confirmBtn, BorderLayout.EAST);
@@ -295,7 +357,6 @@ public class CharacterSelect extends JPanel {
         }
         return false;
     }
-
 
     private void confirmTeam() {
     if (chosenUnits.size() != 4) return;
