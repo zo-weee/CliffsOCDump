@@ -1,5 +1,6 @@
 package main;
 
+import audio.MusicPlayer;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -7,9 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import javax.swing.*;
-import main.EnvironmentSelect;
-
-import audio.MusicPlayer;
 import units.*;
 
 public class CharacterSelect extends JPanel {
@@ -87,6 +85,8 @@ public class CharacterSelect extends JPanel {
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
         leftPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
         add(leftPanel, BorderLayout.WEST);
+
+        // this is the thing that makes the character portraits in the character select screen on the side uwu
 
         for (Unit u : UnitRegistry.getAllUnits()) {
             JButton portraitBtn = new JButton(new ImageIcon(u.picSmall));
