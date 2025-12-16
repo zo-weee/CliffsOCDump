@@ -38,7 +38,7 @@ public class Buffer extends Unit {
             256, 256, Image.SCALE_SMOOTH
         );
 
-        this.flairColor = new Color(102, 178, 255, 255);
+        this.flairColor = new Color(168, 210, 255, 8);
 
         this.basicDesc =
             "<html><b>Forbidden Knowledge</b><br>"

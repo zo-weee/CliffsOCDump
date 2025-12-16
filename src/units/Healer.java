@@ -37,7 +37,7 @@ public class Healer extends Unit {
 
         this.picSelectBG = new ImageIcon(getClass().getResource("/assets/Healer/eleanorbg.png")).getImage();
 
-        this.flairColor = new Color(255, 128, 0, 255);
+        this.flairColor = new Color(255, 225, 181, 8);
 
         this.basicDesc = 
             "<html><b>Light Drive</b>" + "<br>"

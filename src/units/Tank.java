@@ -38,7 +38,7 @@ public class Tank extends Unit {
             256, 256, Image.SCALE_SMOOTH
         );
 
-        this.flairColor = new Color(252, 198, 50, 255);
+        this.flairColor = new Color(255, 250, 145, 8);
 
         this.basicDesc = 
             "<html><b>Lone Wolf Charge</b>" + "<br>"
