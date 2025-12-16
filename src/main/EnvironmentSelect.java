@@ -1,17 +1,29 @@
 package main;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import javax.swing.*;
 import units.Unit;
 
 public class EnvironmentSelect extends JPanel {
+
+    private Image background;
 
     public EnvironmentSelect(JFrame frame,
                              ArrayList<Unit> teamP1,
                              ArrayList<Unit> teamP2) {
 
-        setBackground(Color.BLACK);
+        int tileSize = 70;
+        int cols = 10;
+        int rows = 12;
+        int offsetX = 40;
+        int offsetY = 40;
+
+        int width = cols * tileSize + offsetX * 2;
+        int height = rows * tileSize + offsetY * 2;
+
+        this.setPreferredSize(new Dimension(width, height));
+        this.setBackground(Color.BLACK);
         setLayout(new BorderLayout());
 
         JLabel title = new JLabel("Select Environment", SwingConstants.CENTER);
