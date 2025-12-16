@@ -343,6 +343,8 @@ public class Board extends JPanel {
         int finalDamage = Math.max(0, damage - target.def);
 
         target.takeDamage(finalDamage);
+        target.triggerFlash(new Color(255, 0, 0, 140)); // RED
+
 
         String targetLabel = unitLabel(target);
 
@@ -366,6 +368,7 @@ public class Board extends JPanel {
         int healed = target.curHp - before;
 
         String targetLabel = unitLabel(target);
+        target.triggerFlash(new Color(0, 255, 0, 140)); // GREEN
 
         logLine("  - " + targetLabel + " healed +" + healed +
                 " (HP: " + target.curHp + "/" + target.maxHp + ")");
@@ -621,6 +624,32 @@ public class Board extends JPanel {
             g2d.drawRect(x + 2, y + 2, tileSize - 4, tileSize - 4);
             g2d.setStroke(old);
         }
+
+       long now = System.currentTimeMillis();
+
+        for (Unit u : units) {
+            if (u.isFlashing) {
+                long elapsed = now - u.flashStartTime;
+
+                if (elapsed > Unit.FLASH_DURATION) {
+                    u.isFlashing = false;
+                    u.flashColor = null;
+                } else {
+                    int x = offsetX + u.getX() * tileSize;
+                    int y = offsetY + u.getY() * tileSize;
+
+                    g2d.setColor(u.flashColor);
+                    g2d.fillRect(
+                        x + 2,
+                        y + 2,
+                        tileSize - 4,
+                        tileSize - 4
+                    );
+                }
+            }
+        }
+
+
     }
 
     public ArrayList<Unit> getUnits() {

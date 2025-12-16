@@ -30,6 +30,17 @@ public abstract class Unit {
 
     public boolean hasActedThisTurn = false;
 
+    public boolean isFlashing = false;
+    public Color flashColor = null;
+    public long flashStartTime = 0;
+    public static final int FLASH_DURATION = 150; // ms
+
+    public void triggerFlash(Color color) {
+        isFlashing = true;
+        flashColor = color;
+        flashStartTime = System.currentTimeMillis();
+    }
+
     public abstract void draw(Graphics2D g2d, int tileSize, int offsetX, int offsetY);
     public List<Action> actions = new ArrayList<>();
     public ArrayList<Status> statuses = new ArrayList<>();
