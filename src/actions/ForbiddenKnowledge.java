@@ -20,7 +20,7 @@ public class ForbiddenKnowledge implements Action {
         Unit target = b.getUnit(c, r);
         if (target == null) return;
 
-        int damage = (int)(u.atk * 1) + (int)(u.magicAtk * 1);
+        int damage = (int)(u.atk * 0.8) + (int)(u.magicAtk * 1.4);
         b.applyDamage(target, damage);
         
         u.gainEnergy(2);
