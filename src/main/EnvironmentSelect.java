@@ -191,11 +191,11 @@ public class EnvironmentSelect extends JPanel {
     public void previewEnvironment(EnvironmentType env) {
         loadEnvironment(env);
 
-        tileImages = new Image[rows][cols];
+        tileImages = new Image[rows + 2][cols + 2];
         Random rng = new Random();
 
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
+        for (int r = 0; r < rows + 2; r++) {
+            for (int c = 0; c < cols + 2; c++) {
                 tileImages[r][c] = rng.nextDouble() < 0.15 ? tileBlocked : passableTiles[rng.nextInt(passableTiles.length)];
             }
         }
@@ -210,9 +210,9 @@ public class EnvironmentSelect extends JPanel {
 
         if (tileImages == null) return;
 
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
-                g.drawImage(tileImages[r][c], offsetX + c * tileSize, offsetY + r * tileSize, tileSize, tileSize, this);
+        for (int r = 0; r < rows + 2; r++) {
+            for (int c = 0; c < cols + 2; c++) {
+                g.drawImage(tileImages[r][c], c * tileSize - offsetX, r * tileSize - offsetY, tileSize, tileSize, this);
             }
         }
     }
