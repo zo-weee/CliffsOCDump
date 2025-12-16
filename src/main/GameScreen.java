@@ -18,7 +18,14 @@ public class GameScreen extends JPanel {
         statusBoard = new StatusBoard();             
 
         board = new Board(team, actionPanel, EnvironmentType.GRASS);
-        board.setStatusBoard(statusBoard);          
+        board.setStatusBoard(statusBoard); 
+        
+        board.setGameOverListener(winner -> {
+            frame.setContentPane(new GameOver(frame, winner));
+            frame.pack();
+            frame.revalidate();
+            frame.repaint();
+        });
 
         Input inputHandler = new Input(board);
         board.addMouseListener(inputHandler);
@@ -48,6 +55,13 @@ public class GameScreen extends JPanel {
 
         board = new Board(allUnits, actionPanel, env);
         board.setStatusBoard(statusBoard);
+
+        board.setGameOverListener(winner -> {
+            frame.setContentPane(new GameOver(frame, winner));
+            frame.pack();
+            frame.revalidate();
+            frame.repaint();
+        });
 
         Input inputHandler = new Input(board);
         board.addMouseListener(inputHandler);
