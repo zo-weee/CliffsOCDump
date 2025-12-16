@@ -166,7 +166,6 @@ public class ActionPanel extends JPanel {
                     label + " (" + a.getEnergyCost() + ")"
                 );
 
-                // ✅ MULTI-LINE TOOLTIP SUPPORT
                 if (desc != null && !desc.isEmpty()) {
                     item.setToolTipText(
                         "<html>" + desc.replace("\n", "<br>") + "</html>"
@@ -181,15 +180,19 @@ public class ActionPanel extends JPanel {
                     Action.TargetType type = a.getTargetType();
 
                     if (type == Action.TargetType.ENEMY) {
+
                         board.setActionMode(Board.ActionMode.ATTACK);
                         board.showAttackHighlightsFor(selectedUnit);
 
                     } else if (type == Action.TargetType.ALLY) {
+
                         board.setActionMode(Board.ActionMode.ALLY_TARGET);
                         board.showAllyHighlightsFor(selectedUnit);
 
                     } else if (type == Action.TargetType.SELF) {
-                        // Execute immediately on self
+
+                        board.beginAction(selectedUnit, a.getName());
+
                         a.execute(
                             board,
                             selectedUnit,
@@ -197,17 +200,36 @@ public class ActionPanel extends JPanel {
                             selectedUnit.getY()
                         );
 
+                        board.endAction();
+
+                        selectedUnit.spendEnergy(a.getEnergyCost());
                         selectedUnit.hasActedThisTurn = true;
+
                         board.setActionMode(Board.ActionMode.NONE);
+
+                        if (board.allCurrentTeamActed()) {
+                            board.endTurn();
+                        }
 
                     } else if (type == Action.TargetType.GLOBAL) {
-                        // Execute immediately, no target
+
+                        board.beginAction(selectedUnit, a.getName());
+
                         a.execute(board, selectedUnit, -1, -1);
 
+                        board.endAction();
+
+                        selectedUnit.spendEnergy(a.getEnergyCost());
                         selectedUnit.hasActedThisTurn = true;
+
                         board.setActionMode(Board.ActionMode.NONE);
+
+                        if (board.allCurrentTeamActed()) {
+                            board.endTurn();
+                        }
                     }
                 });
+
 
 
                 menu.add(item);
