@@ -1,7 +1,7 @@
 package main;
 
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public class StatusBoard extends JPanel {
 
@@ -27,7 +27,7 @@ public class StatusBoard extends JPanel {
         add(scroll, BorderLayout.CENTER);
 
         // Optional sizing
-        setPreferredSize(new Dimension(320, 0));
+        setPreferredSize(new Dimension(450, 0));
     }
 
     public void log(String msg) {

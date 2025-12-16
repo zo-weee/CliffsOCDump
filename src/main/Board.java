@@ -297,11 +297,9 @@ public class Board extends JPanel {
         target.takeDamage(finalDamage);
 
         String targetLabel = unitLabel(target);
-        String sourceLabel = (logActor != null) ? unitLabel(logActor) : "System";
 
         logLine("  - " + targetLabel + " takes " + finalDamage +
-            " dmg (HP: " + target.curHp + "/" + target.maxHp + ")" +
-            " (source: " + sourceLabel + ")");
+            " dmg (HP: " + target.curHp + "/" + target.maxHp + ")");
 
         if (!target.isAlive()) {
             units.remove(target);
@@ -319,11 +317,9 @@ public class Board extends JPanel {
         int healed = target.curHp - before;
 
         String targetLabel = unitLabel(target);
-        String sourceLabel = (logActor != null) ? unitLabel(logActor) : "System";
 
         logLine("  - " + targetLabel + " healed +" + healed +
-                " (HP: " + target.curHp + "/" + target.maxHp + ")" +
-                " (source: " + sourceLabel + ")");
+                " (HP: " + target.curHp + "/" + target.maxHp + ")");
 
         repaint();
     }
