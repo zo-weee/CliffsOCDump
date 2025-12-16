@@ -3,10 +3,9 @@ package main;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
-
 import javax.swing.*;
 // import units.SelectedTeam;
 
@@ -41,17 +40,24 @@ public class Menu extends JPanel {
         this.setPreferredSize(new Dimension(width, height));
         this.setBackground(Color.BLACK);
 
-        background = new ImageIcon("src/assets/tempbg.png").getImage();
+        background = new ImageIcon(getClass().getResource("/assets/tempbg.png")).getImage();
 
         this.setLayout(new GridBagLayout());
 
-        
         try {
-            pixelfont = Font.createFont(Font.TRUETYPE_FONT, new File("src/assets/PixelifySans-VariableFont_wght.ttf")).deriveFont(100f);
-            smallpixfont = Font.createFont(Font.TRUETYPE_FONT, new File("src/assets/PixelifySans-VariableFont_wght.ttf")).deriveFont(32f);
+            InputStream is = getClass().getResourceAsStream("/assets/PixelifySans-VariableFont_wght.ttf");
+
+            if (is == null) {
+                throw new RuntimeException("Font not found on classpath");
+            }
+
+            pixelfont = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(100f);
+            smallpixfont = pixelfont.deriveFont(32f);
+
         } catch (FontFormatException | IOException e) {
             e.printStackTrace();
             pixelfont = new Font("Serif", Font.BOLD, 36);
+            smallpixfont = pixelfont.deriveFont(18f);
         }
 
         JLabel title = new JLabel("<html><div style='text-align:right;'>" + "STARLIGHT<br>VOYAGERS" + "</div></html>");

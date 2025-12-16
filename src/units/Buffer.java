@@ -1,11 +1,10 @@
 package units;
 
+import actions.Enlightenment;
+import actions.ForbiddenKnowledge;
+import actions.ThePathToSolitude;
 import java.awt.*;
 import javax.swing.ImageIcon;
-
-import actions.ForbiddenKnowledge;
-import actions.Enlightenment;
-import actions.ThePathToSolitude;
 
 public class Buffer extends Unit {
 
@@ -26,8 +25,8 @@ public class Buffer extends Unit {
         this.moveRange = 2;
         this.attackRange = 10;
 
-        ImageIcon small = new ImageIcon("src/assets/Buffer/picSmall.png");
-        ImageIcon large = new ImageIcon("src/assets/Buffer/picLarge.png");
+        ImageIcon small = new ImageIcon(getClass().getResource("/assets/Buffer/picSmall.png"));
+        ImageIcon large = new ImageIcon(getClass().getResource("/assets/Buffer/picLarge.png"));
 
         this.picSmall = small.getImage().getScaledInstance(
             128, 128, Image.SCALE_SMOOTH
@@ -86,15 +85,14 @@ public class Buffer extends Unit {
 
         String basePath;
         if (team == Team.ALLY) {
-            basePath = "src/assets/Buffer/player1/walk/GS";
+            basePath = "/assets/Buffer/player1/walk/GS";
         } else {
-            basePath = "src/assets/Buffer/player2/walk/GSE";
+            basePath = "/assets/Buffer/player2/walk/GSE";
         }
 
         for (int i = 0; i < 8; i++) {
-            walkFrames[i] = new ImageIcon(
-                basePath + (i + 1) + ".png"
-            ).getImage();
+            String wfName = basePath + (i + 1) + ".png";
+            walkFrames[i] = new ImageIcon(getClass().getResource(wfName)).getImage();
         }
     }
 

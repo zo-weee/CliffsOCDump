@@ -1,11 +1,10 @@
 package units;
 
-import java.awt.*;
-
-import javax.swing.ImageIcon;
+import actions.APromiseToLife;
 import actions.LightDrive;
 import actions.Sanctification;
-import actions.APromiseToLife;
+import java.awt.*;
+import javax.swing.ImageIcon;
 
 public class Healer extends Unit {
 
@@ -26,9 +25,8 @@ public class Healer extends Unit {
         this.moveRange = 3;
         this.attackRange = 2;
 
-        ImageIcon small = new ImageIcon("src/assets/Healer/picSmall.png");
-        ImageIcon large = new ImageIcon("src/assets/Healer/picLarge.png");
-
+        ImageIcon small = new ImageIcon(getClass().getResource("/assets/Healer/picSmall.png"));
+        ImageIcon large = new ImageIcon(getClass().getResource("/assets/Healer/picLarge.png"));
         this.picSmall = small.getImage().getScaledInstance(
             128, 128, Image.SCALE_SMOOTH
         );
@@ -83,15 +81,14 @@ public class Healer extends Unit {
 
         String basePath;
         if (team == Team.ALLY) {
-            basePath = "src/assets/Healer/player1/walk/GE";
+            basePath = "/assets/Healer/player1/walk/GE";
         } else {
-            basePath = "src/assets/Healer/player2/walk/GEE";
+            basePath = "/assets/Healer/player2/walk/GEE";
         }
 
         for (int i = 0; i < 8; i++) {
-            walkFrames[i] = new ImageIcon(
-                basePath + (i + 1) + ".png"
-            ).getImage();
+            String wfName = basePath + (i + 1) + ".png";
+            walkFrames[i] = new ImageIcon(getClass().getResource(wfName)).getImage();
         }
     }
 

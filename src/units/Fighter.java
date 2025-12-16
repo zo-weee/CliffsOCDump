@@ -1,11 +1,10 @@
 package units;
 
-import java.awt.*;
-
-import javax.swing.ImageIcon;
-import actions.VoidSlash;
-import actions.ShadowsRise;
 import actions.EventHorizon;
+import actions.ShadowsRise;
+import actions.VoidSlash;
+import java.awt.*;
+import javax.swing.ImageIcon;
 
 public class Fighter extends Unit {
 
@@ -26,8 +25,8 @@ public class Fighter extends Unit {
         this.moveRange = 5;
         this.attackRange = 2;
 
-        ImageIcon small = new ImageIcon("src/assets/Fighter/picSmall.png");
-        ImageIcon large = new ImageIcon("src/assets/Fighter/picLarge.png");
+        ImageIcon small = new ImageIcon(getClass().getResource("/assets/Fighter/picSmall.png"));
+        ImageIcon large = new ImageIcon(getClass().getResource("/assets/Fighter/picLarge.png"));
 
         this.picSmall = small.getImage().getScaledInstance(
             128, 128, Image.SCALE_SMOOTH
@@ -82,15 +81,14 @@ public class Fighter extends Unit {
 
         String basePath;
         if (team == Team.ALLY) {
-            basePath = "src/assets/Fighter/player1/walk/RK";
+            basePath = "/assets/Fighter/player1/walk/RK";
         } else {
-            basePath = "src/assets/Fighter/player2/walk/RKE";
+            basePath = "/assets/Fighter/player2/walk/RKE";
         }
 
         for (int i = 0; i < 8; i++) {
-            walkFrames[i] = new ImageIcon(
-                basePath + (i + 1) + ".png"
-            ).getImage();
+            String wfName = basePath + (i + 1) + ".png";
+            walkFrames[i] = new ImageIcon(getClass().getResource(wfName)).getImage();
         }
     }
 

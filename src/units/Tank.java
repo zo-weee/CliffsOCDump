@@ -1,11 +1,10 @@
 package units;
 
-import java.awt.*;
-
-import javax.swing.ImageIcon;
-import actions.LoneWolfCharge;
-import actions.DevilsMaw;
 import actions.AbsoluteTyranny;
+import actions.DevilsMaw;
+import actions.LoneWolfCharge;
+import java.awt.*;
+import javax.swing.ImageIcon;
 
 public class Tank extends Unit {
 
@@ -26,8 +25,8 @@ public class Tank extends Unit {
         this.moveRange = 1;
         this.attackRange = 10;
 
-        ImageIcon small = new ImageIcon("src/assets/Tank/picSmall.png");
-        ImageIcon large = new ImageIcon("src/assets/Tank/picLarge.png");
+        ImageIcon small = new ImageIcon(getClass().getResource("/assets/Tank/picSmall.png"));
+        ImageIcon large = new ImageIcon(getClass().getResource("/assets/Tank/picLarge.png"));
 
         this.picSmall = small.getImage().getScaledInstance(
             128, 128, Image.SCALE_SMOOTH
@@ -83,15 +82,14 @@ public class Tank extends Unit {
 
         String basePath;
         if (team == Team.ALLY) {
-            basePath = "src/assets/Tank/player1/walk/C";
+            basePath = "/assets/Tank/player1/walk/C";
         } else {
-            basePath = "src/assets/Tank/player2/walk/CE";
+            basePath = "/assets/Tank/player2/walk/CE";
         }
 
         for (int i = 0; i < 5; i++) {
-            walkFrames[i] = new ImageIcon(
-                basePath + (i + 1) + ".png"
-            ).getImage();
+            String wfName = basePath + (i + 1) + ".png";
+            walkFrames[i] = new ImageIcon(getClass().getResource(wfName)).getImage();
         }
     }
 

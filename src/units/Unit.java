@@ -1,12 +1,12 @@
 package units;
 
-import java.awt.*;
 import actions.Action;
+import java.awt.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Iterator;
-import status.Status;
+import java.util.List;
 import main.Board;
+import status.Status;
 
 public abstract class Unit {
 

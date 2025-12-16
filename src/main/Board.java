@@ -1,16 +1,15 @@
 package main;
 
 import actions.Action;
-import units.Unit;
-import units.Mage;
-
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
-import javax.swing.Timer;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.awt.*;
+import javax.swing.ImageIcon;
+import javax.swing.JPanel;
+import javax.swing.Timer;
+import units.Mage;
+import units.Unit;
 
 public class Board extends JPanel {
 
@@ -68,13 +67,13 @@ public class Board extends JPanel {
         placeInitialUnits();
 
         passableTiles = new Image[]{
-            new ImageIcon("src/assets/Environment/env1/pass/grass2.png").getImage(),
-            new ImageIcon("src/assets/Environment/env1/pass/grass3.png").getImage(),
-            new ImageIcon("src/assets/Environment/env1/pass/grass4.png").getImage()
+            new ImageIcon(getClass().getResource("/assets/Environment/env1/pass/grass2.png")).getImage(),
+            new ImageIcon(getClass().getResource("/assets/Environment/env1/pass/grass3.png")).getImage(),
+            new ImageIcon(getClass().getResource("/assets/Environment/env1/pass/grass4.png")).getImage()
         };
 
         tileBlocked = new ImageIcon(
-            "src/assets/Environment/env1/block/grass_rock2.png"
+            getClass().getResource("/assets/Environment/env1/block/grass_rock2.png")
         ).getImage();
 
         terrain = new boolean[rows][cols];

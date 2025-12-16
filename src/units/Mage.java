@@ -1,11 +1,10 @@
 package units;
 
-import java.awt.*;
-
-import javax.swing.ImageIcon;
-import actions.QueensTorment;
 import actions.AquaDetention;
 import actions.LeviathanWill;
+import actions.QueensTorment;
+import java.awt.*;
+import javax.swing.ImageIcon;
 
 public class Mage extends Unit {
 
@@ -26,8 +25,8 @@ public class Mage extends Unit {
         this.moveRange = 1;
         this.attackRange = 10;
 
-        ImageIcon small = new ImageIcon("src/assets/Mage/picSmall.png");
-        ImageIcon large = new ImageIcon("src/assets/Mage/picLarge.png");
+        ImageIcon small = new ImageIcon(getClass().getResource("/assets/Mage/picSmall.png"));
+        ImageIcon large = new ImageIcon(getClass().getResource("/assets/Mage/picLarge.png"));
 
         this.picSmall = small.getImage().getScaledInstance(
             128, 128, Image.SCALE_SMOOTH
@@ -83,15 +82,14 @@ public class Mage extends Unit {
 
         String basePath;
         if (team == Team.ALLY) {
-            basePath = "src/assets/Mage/player1/walk/CP";
+            basePath = "/assets/Mage/player1/walk/CP";
         } else {
-            basePath = "src/assets/Mage/player2/walk/CPE";
+            basePath = "/assets/Mage/player2/walk/CPE";
         }
 
         for (int i = 0; i < 8; i++) {
-            walkFrames[i] = new ImageIcon(
-                basePath + (i + 1) + ".png"
-            ).getImage();
+            String wfName = basePath + (i + 1) + ".png";
+            walkFrames[i] = new ImageIcon(getClass().getResource(wfName)).getImage();
         }
     }
 
