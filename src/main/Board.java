@@ -82,15 +82,16 @@ public class Board extends JPanel {
                 ).getImage();
                 break;
 
-            case ICE:
+            case GALAXY:
                 passableTiles = new Image[]{
-                    new ImageIcon(getClass().getResource("/assets/Environment/env3/pass/ice1.png")).getImage(),
-                    new ImageIcon(getClass().getResource("/assets/Environment/env3/pass/ice2.png")).getImage(),
-                    new ImageIcon(getClass().getResource("/assets/Environment/env3/pass/ice3.png")).getImage()
+                    new ImageIcon(getClass().getResource("/assets/Environment/env3/pass/star1.png")).getImage(),
+                    new ImageIcon(getClass().getResource("/assets/Environment/env3/pass/star2.png")).getImage(),
+                    new ImageIcon(getClass().getResource("/assets/Environment/env3/pass/star3.png")).getImage(),
+                    new ImageIcon(getClass().getResource("/assets/Environment/env3/pass/star4.png")).getImage()
                 };
 
                 tileBlocked = new ImageIcon(
-                    getClass().getResource("/assets/Environment/env3/block/ice_rock.png")
+                    getClass().getResource("/assets/Environment/env3/block/star_crystal1.png")
                 ).getImage();
                 break;
         }

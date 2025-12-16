@@ -36,11 +36,11 @@ public class EnvironmentSelect extends JPanel {
 
         JButton grass = new JButton("Grass");
         JButton castle = new JButton("Castle");
-        JButton ice = new JButton("Ice");
+        JButton galaxy = new JButton("Galaxy");
 
         buttons.add(grass);
         buttons.add(castle);
-        buttons.add(ice);
+        buttons.add(galaxy);
 
         add(buttons, BorderLayout.CENTER);
 
@@ -52,8 +52,8 @@ public class EnvironmentSelect extends JPanel {
             startGame(frame, teamP1, teamP2, EnvironmentType.CASTLE)
         );
 
-        ice.addActionListener(e ->
-            startGame(frame, teamP1, teamP2, EnvironmentType.ICE)
+        galaxy.addActionListener(e ->
+            startGame(frame, teamP1, teamP2, EnvironmentType.GALAXY)
         );
     }
 
