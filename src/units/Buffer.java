@@ -17,7 +17,7 @@ public class Buffer extends Unit {
         this.maxHp = 1300;
         this.curHp = maxHp;
         this.atk = 100;
-        this.magicAtk = 170;
+        this.magicAtk = 210;
         this.def = 130;
         this.energy = 2;
         this.maxEnergy = 6;

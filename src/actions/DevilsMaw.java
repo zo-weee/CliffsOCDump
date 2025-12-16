@@ -22,7 +22,7 @@ public class DevilsMaw implements Action {
 
         for (Unit t : snapshot) {
             if (t != null && t.isAlive() && t.team != u.team) {
-                b.applyDamage(t, (int)(u.atk * 1) + (int)(u.magicAtk * 1.5));
+                b.applyDamage(t, (int)(u.atk * 1) + (int)(u.magicAtk * 0.8));
             }
         }
 
