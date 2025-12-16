@@ -25,7 +25,6 @@ public class Input extends MouseAdapter {
 
         Unit clickedUnit = board.getUnit(col, row);
 
-        // stop animation of previously selected unit
         if (board.selectedUnit != null) {
             board.selectedUnit.isWalking = false;
             board.selectedUnit.walkFrameIndex = 0;
@@ -33,13 +32,11 @@ public class Input extends MouseAdapter {
 
         if (clickedUnit != null) {
 
-            // ✅ Hotseat rule: only select units for the current team
             if (clickedUnit.team != board.currentTurn) {
                 System.out.println("Not your turn. Current turn: " + board.currentTurn);
                 return;
             }
 
-            // ✅ Can't reuse a unit that already acted this team-turn
             if (clickedUnit.hasActedThisTurn) {
                 System.out.println("This unit already acted this turn.");
                 return;
@@ -48,7 +45,6 @@ public class Input extends MouseAdapter {
             System.out.println("PRESSED: Unit selected at Grid (" + col + ", " + row + ")");
             board.onUnitSelected(clickedUnit);
 
-            // start walk animation (your current behavior)
             clickedUnit.isWalking = true;
 
         } else {
@@ -97,7 +93,6 @@ public class Input extends MouseAdapter {
             return;
         }
 
-        // ================= ATTACK =================
         if (board.currentMode == Board.ActionMode.ATTACK) {
 
             if (u.hasActedThisTurn) {
@@ -132,7 +127,6 @@ public class Input extends MouseAdapter {
             }
         }
 
-        // ================= ALLY TARGET (BUFF / HEAL) =================
         if (board.currentMode == Board.ActionMode.ALLY_TARGET) {
 
             if (u.hasActedThisTurn) {
