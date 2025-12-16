@@ -4,19 +4,22 @@ import actions.Action;
 import units.Unit;
 import units.Mage;
 
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Stroke;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.awt.*;
 
 public class Board extends JPanel {
+
+    private Image[] passableTiles;
+    private Image tileBlocked;
+    private Image[][] tileImages;
+    private boolean[][] terrain;
+
+    private Random rng = new Random();
 
     public enum ActionMode {
         NONE,
@@ -24,14 +27,11 @@ public class Board extends JPanel {
         ATTACK
     }
 
-    // ===== Turn / Hotseat =====
-    public Unit.Team currentTurn = Unit.Team.ALLY; // Player 1 (ALLY) starts
+    public Unit.Team currentTurn = Unit.Team.ALLY;
 
-    // ===== Action selection =====
     public Action selectedAction;
     public ActionMode currentMode = ActionMode.NONE;
 
-    // ===== Board dimensions =====
     public int tileSize = 50;
     int cols = 10;
     int rows = 10;
@@ -39,26 +39,23 @@ public class Board extends JPanel {
     public int offsetX = 40;
     public int offsetY = 40;
 
-    // ===== Units / UI =====
     ArrayList<Unit> units;
     public Unit selectedUnit;
     private ActionPanel actionPanel;
 
-    // ===== Highlights =====
     private List<Point> highlights = new ArrayList<>();
 
     private StatusBoard statusBoard;
 
-    // current “action context” so applyDamage/applyHeal can print who caused it
     private Unit logActor = null;
     private String logActionName = null;
 
-    // optional convenience ctor if old code uses Board(selectedUnits)
     public Board(ArrayList<Unit> selectedUnits) {
         this(selectedUnits, null);
     }
 
     public Board(ArrayList<Unit> selectedUnits, ActionPanel actionPanel) {
+
         this.units = selectedUnits;
         this.actionPanel = actionPanel;
 
@@ -67,21 +64,62 @@ public class Board extends JPanel {
         this.setPreferredSize(new Dimension(width, height));
         this.setBackground(Color.BLACK);
 
-        // Place ALLY and ENEMY units in different rows (simple spawn)
         placeInitialUnits();
 
-        // TEMP: If you don't pass enemies in yet, you can spawn dummy enemies.
-        // Comment this out once you have real Player 2 selection.
+        passableTiles = new Image[]{
+            new ImageIcon("src/assets/Environment/env1/pass/grass2.png").getImage(),
+            new ImageIcon("src/assets/Environment/env1/pass/grass3.png").getImage(),
+            new ImageIcon("src/assets/Environment/env1/pass/grass4.png").getImage()
+        };
+
+        tileBlocked = new ImageIcon(
+            "src/assets/Environment/env1/block/grass_rock2.png"
+        ).getImage();
+
+        terrain = new boolean[rows][cols];
+        tileImages = new Image[rows][cols];
+
+        double BASE_BLOCK_CHANCE = 0.08;
+        double NEAR_BLOCK_BONUS = 0.05;
+
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                terrain[r][c] = rng.nextDouble() >= BASE_BLOCK_CHANCE;
+            }
+        }
+
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                if (terrain[r][c] && hasBlockedNeighbor(r, c)) {
+                    if (rng.nextDouble() < NEAR_BLOCK_BONUS) {
+                        terrain[r][c] = false;
+                    }
+                }
+            }
+        }
+
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                if (terrain[r][c]) {
+                    tileImages[r][c] =
+                        passableTiles[rng.nextInt(passableTiles.length)];
+                } else {
+                    tileImages[r][c] = tileBlocked;
+                }
+            }
+        }
+        
+        clearSpawnRows();
+
         if (!hasAnyEnemies()) {
             spawnDummyEnemies();
         }
 
         if (this.actionPanel != null) {
             this.actionPanel.setBoard(this);
-            this.actionPanel.setCurrentTurn(currentTurn); // show initial turn
+            this.actionPanel.setCurrentTurn(currentTurn);
         }
 
-        // Animation timer (~60 FPS)
         new Timer(16, e -> {
             for (Unit u : units) {
                 u.updateAnimation();
@@ -90,11 +128,23 @@ public class Board extends JPanel {
         }).start();
     }
 
-    // ==============================
-    // Spawn / Setup
-    // ==============================
+    private void clearSpawnRows() {
+        int allyRow = rows - 2;
+        int enemyRow = 1;
 
-    private void placeInitialUnits() {
+        for (int c = 0; c < cols; c++) {
+            terrain[allyRow][c] = true;
+            terrain[enemyRow][c] = true;
+
+            tileImages[allyRow][c] =
+                passableTiles[rng.nextInt(passableTiles.length)];
+            tileImages[enemyRow][c] =
+                passableTiles[rng.nextInt(passableTiles.length)];
+        }
+    }
+
+   private void placeInitialUnits() {
+
         int[] startX = {3, 4, 5, 6};
 
         int allyRow = rows - 2;
@@ -104,13 +154,13 @@ public class Board extends JPanel {
         int enemyIndex = 0;
 
         for (Unit u : units) {
+
             if (u.team == Unit.Team.ENEMY) {
                 if (enemyIndex < startX.length) {
                     u.setPosition(startX[enemyIndex], enemyRow);
                     enemyIndex++;
                 }
             } else {
-                // default to ALLY if unset
                 if (u.team == null) u.team = Unit.Team.ALLY;
 
                 if (allyIndex < startX.length) {
@@ -119,7 +169,6 @@ public class Board extends JPanel {
                 }
             }
 
-            // new game: ensure units haven't acted yet
             u.hasActedThisTurn = false;
         }
     }
@@ -151,9 +200,21 @@ public class Board extends JPanel {
         placeInitialUnits();
     }
 
-    // ==============================
-    // Queries
-    // ==============================
+    private boolean hasBlockedNeighbor(int r, int c) {
+        for (int dr = -1; dr <= 1; dr++) {
+            for (int dc = -1; dc <= 1; dc++) {
+                if (dr == 0 && dc == 0) continue;
+
+                int nr = r + dr;
+                int nc = c + dc;
+
+                if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+                    if (!terrain[nr][nc]) return true;
+                }
+            }
+        }
+        return false;
+    }
 
     public Unit getUnit(int col, int row) {
         for (Unit u : this.units) {
@@ -164,21 +225,21 @@ public class Board extends JPanel {
         return null;
     }
 
+    public boolean isTileBlocked(int col, int row) {
+        return !terrain[row][col];
+    }
+
+
     private boolean isInsideBoard(int col, int row) {
         return col >= 0 && col < cols && row >= 0 && row < rows;
     }
 
-    // Can the current player click/select this unit right now?
     public boolean isClickable(Unit u) {
         return u != null
                 && u.isAlive()
                 && u.team == currentTurn
                 && !u.hasActedThisTurn;
     }
-
-    // ==============================
-    // Move / Attack execution
-    // ==============================
 
     public void makeMove(Move move) {
         logLine("[" + p(move.u.team) + "] " + move.u.name +
@@ -197,7 +258,6 @@ public class Board extends JPanel {
     public void performAttack(Unit attacker, int targetCol, int targetRow) {
         Unit target = getUnit(targetCol, targetRow);
 
-        // ✅ prevent NullPointer + self-hit
         if (target == null || target == attacker) return;
 
         if (attacker.team == target.team) {
@@ -231,7 +291,6 @@ public class Board extends JPanel {
 
         target.takeDamage(finalDamage);
 
-        // Indented effect line
         String src = (logActor != null) ? ("[" + p(logActor.team) + "] " + logActor.name) : "[System]";
         logLine("  - " + target.name + " takes " + finalDamage +
                 " dmg (HP: " + target.curHp + "/" + target.maxHp + ")  <" + src + ">");
@@ -258,12 +317,6 @@ public class Board extends JPanel {
         repaint();
     }
 
-
-
-    // ==============================
-    // Highlights / selection / modes
-    // ==============================
-
     public void setHighlights(List<Point> tiles) {
         this.highlights = tiles;
         repaint();
@@ -276,7 +329,7 @@ public class Board extends JPanel {
 
     public void setActionMode(ActionMode mode) {
         this.currentMode = mode;
-        clearHighlights(); // always clear old highlights when mode changes
+        clearHighlights();
     }
 
     public void onUnitSelected(Unit u) {
@@ -344,10 +397,6 @@ public class Board extends JPanel {
         setHighlights(tiles);
     }
 
-    // ==============================
-    // Turn logic (hotseat)
-    // ==============================
-
     public boolean allCurrentTeamActed() {
         for (Unit u : units) {
             if (u.team == currentTurn && u.isAlive() && !u.hasActedThisTurn) {
@@ -358,24 +407,20 @@ public class Board extends JPanel {
     }
 
     public void endTurn() {
-        // process statuses only for the team that just finished
         for (Unit u : units) {
             if (u.team == currentTurn && u.isAlive()) {
                 u.processStatuses(this);
             }
         }
 
-        // swap team
         currentTurn = (currentTurn == Unit.Team.ALLY) ? Unit.Team.ENEMY : Unit.Team.ALLY;
 
-        // reset only the incoming team's "acted" flags
         for (Unit u : units) {
             if (u.team == currentTurn && u.isAlive()) {
-                u.resetTurn(); // sets hasActedThisTurn = false
+                u.resetTurn();
             }
         }
 
-        // clear selection & UI
         clearSelection();
 
         System.out.println("=== " + currentTurn + " TURN ===");
@@ -409,25 +454,23 @@ public class Board extends JPanel {
         this.logActionName = null;
     }
 
-    // ==============================
-    // Painting
-    // ==============================
-
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
         Graphics2D g2d = (Graphics2D) g;
 
-        // board background (white square)
-        g2d.setColor(Color.WHITE);
-        g2d.fillRect(offsetX, offsetY, cols * tileSize, rows * tileSize);
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                int x = offsetX + c * tileSize;
+                int y = offsetY + r * tileSize;
+            g2d.drawImage(tileImages[r][c], x, y, tileSize, tileSize, null);
+            }
+        }
 
-        // draw turn text in black margin
         g2d.setColor(Color.WHITE);
         String player = (currentTurn == Unit.Team.ALLY) ? "Player 1" : "Player 2";
 
-        // grid
         g2d.setColor(Color.BLACK);
         for (int r = 0; r <= rows; r++) {
             int y = offsetY + r * tileSize;
@@ -438,7 +481,6 @@ public class Board extends JPanel {
             g2d.drawLine(x, offsetY, x, offsetY + rows * tileSize);
         }
 
-        // ✅ Highlight clickable units (green) ONLY when not targeting a tile
         if (currentMode == ActionMode.NONE) {
             for (Unit u : units) {
                 if (isClickable(u)) {
@@ -451,7 +493,6 @@ public class Board extends JPanel {
             }
         }
 
-        // move/attack highlight tiles
         if (currentMode == ActionMode.MOVE) {
             g2d.setColor(new Color(0, 0, 255, 80));
         } else if (currentMode == ActionMode.ATTACK) {
@@ -466,12 +507,10 @@ public class Board extends JPanel {
             g2d.fillRect(x + 1, y + 1, tileSize - 2, tileSize - 2);
         }
 
-        // units
         for (Unit u : units) {
             u.draw(g2d, tileSize, offsetX, offsetY);
         }
 
-        // ✅ Selected unit border (yellow)
         if (selectedUnit != null) {
             int x = offsetX + selectedUnit.getX() * tileSize;
             int y = offsetY + selectedUnit.getY() * tileSize;
@@ -483,10 +522,6 @@ public class Board extends JPanel {
             g2d.setStroke(old);
         }
     }
-
-    // ==============================
-    // Misc
-    // ==============================
 
     public ArrayList<Unit> getUnits() {
         return units;

@@ -28,8 +28,6 @@ public class ActionPanel extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         setBackground(Color.DARK_GRAY);
 
-        /* ================= TURN LABEL ================= */
-
         turnLabel = new JLabel("");
         turnLabel.setForeground(Color.WHITE);
         turnLabel.setFont(new Font("Arial", Font.BOLD, 16));
@@ -39,8 +37,6 @@ public class ActionPanel extends JPanel {
         turnPanel.add(turnLabel);
 
         add(turnPanel, BorderLayout.NORTH);
-
-        /* ================= STATS PANEL ================= */
 
         JPanel statsPanel = new JPanel();
         statsPanel.setLayout(new BoxLayout(statsPanel, BoxLayout.Y_AXIS));
@@ -84,8 +80,6 @@ public class ActionPanel extends JPanel {
         statsPanel.add(row3);
         statsPanel.add(Box.createVerticalStrut(10));
 
-        /* ================= BUTTONS ================= */
-
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setOpaque(false);
 
@@ -102,8 +96,6 @@ public class ActionPanel extends JPanel {
         buttonsPanel.add(moveButton);
         buttonsPanel.add(attackButton);
 
-        /* ================= PORTRAIT ================= */
-
         portraitLabel = new JLabel();
         portraitLabel.setPreferredSize(new Dimension(96, 96));
         portraitLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -112,8 +104,6 @@ public class ActionPanel extends JPanel {
         portraitLabel.setBorder(
                 BorderFactory.createEmptyBorder(0, 0, 10, 0)
         );
-
-        /* ================= BUTTON LOGIC ================= */
 
         moveButton.addActionListener(e -> {
             if (selectedUnit == null || board == null) return;
@@ -156,8 +146,6 @@ public class ActionPanel extends JPanel {
 
             menu.show(attackButton, 0, attackButton.getHeight());
         });
-
-        /* ================= LAYOUT: CENTER + EAST ================= */
 
         JPanel contentPanel = new JPanel();
         contentPanel.setOpaque(false);
