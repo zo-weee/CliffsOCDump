@@ -208,7 +208,7 @@ public class Board extends JPanel {
         if (rawDamage <= 0 || target == null) return 0;
 
         int def = Math.max(0, target.def);
-        double mult = DEF_SCALE / (DEF_SCALE + def); // 0..1
+        double mult = DEF_SCALE / (DEF_SCALE + def); 
         int finalDamage = (int)Math.round(rawDamage * mult);
 
         if (finalDamage < MIN_DAMAGE) finalDamage = MIN_DAMAGE;
@@ -221,15 +221,19 @@ public class Board extends JPanel {
         int finalDamage = mitigateDamage(rawDamage, target);
         target.takeDamage(finalDamage);
 
-        String src = (logActor != null) ? ("[" + p(logActor.team) + "] " + logActor.name) : "[System]";
-        logLine("  - " + target.name + " takes " + finalDamage +
-                " dmg (HP: " + target.curHp + "/" + target.maxHp + ")  <" + src + ">");
+        String targetLabel = unitLabel(target);
+        String sourceLabel = (logActor != null) ? unitLabel(logActor) : "System";
+
+        logLine("  - " + targetLabel + " takes " + finalDamage +
+                " dmg (HP: " + target.curHp + "/" + target.maxHp + ")" +
+                " (source: " + sourceLabel + ")");
 
         if (!target.isAlive()) {
             units.remove(target);
-            logLine("    * " + target.name + " was defeated!");
+            logLine("    * " + targetLabel + " was defeated!");
         }
     }
+
 
     public void applyHeal(Unit target, int healAmount) {
         if (target == null || !target.isAlive()) return;
@@ -239,10 +243,14 @@ public class Board extends JPanel {
         target.curHp = Math.min(target.maxHp, target.curHp + healAmount);
         int healed = target.curHp - before;
 
-        String src = (logActor != null) ? ("[" + p(logActor.team) + "] " + logActor.name) : "[System]";
-        logLine("  - " + target.name + " healed +" + healed +
-                " (HP: " + target.curHp + "/" + target.maxHp + ")  <" + src + ">");
+        String targetLabel = unitLabel(target);
+        String sourceLabel = (logActor != null) ? unitLabel(logActor) : "System";
+
+        logLine("  - " + targetLabel + " healed +" + healed +
+                " (HP: " + target.curHp + "/" + target.maxHp + ")" +
+                " (source: " + sourceLabel + ")");
     }
+
 
     // ==============================
     // Target highlights (fix friendly targeting)
@@ -438,6 +446,12 @@ public class Board extends JPanel {
 
     public void setStatusBoard(StatusBoard sb) {
         this.statusBoard = sb;
+    }
+
+    private String unitLabel(Unit u) {
+        if (u == null) return "Unknown";
+        String owner = (u.team == null) ? "?" : p(u.team);
+        return owner + "'s " + u.name;
     }
 
     private String p(Unit.Team team) {
