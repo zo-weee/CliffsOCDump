@@ -16,9 +16,9 @@ public class Fighter extends Unit {
 
         this.maxHp = 1700;
         this.curHp = maxHp;
-        this.atk = 270;
+        this.atk = 275;
         this.magicAtk = 50;
-        this.def = 190;
+        this.def = 150;
         this.energy = 2;
         this.maxEnergy = 4;
 

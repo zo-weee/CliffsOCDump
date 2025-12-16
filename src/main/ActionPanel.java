@@ -2,6 +2,8 @@ package main;
 
 import actions.Action;
 import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
 import javax.swing.*;
 import units.Unit;
 
@@ -23,14 +25,30 @@ public class ActionPanel extends JPanel {
 
     private JLabel portraitLabel;
 
+    private Font pixelfont;
+
     public ActionPanel() {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         setBackground(Color.DARK_GRAY);
 
+        try {
+            InputStream is = getClass().getResourceAsStream("/assets/PixelifySans-VariableFont_wght.ttf");
+
+            if (is == null) {
+                throw new RuntimeException("Font not found on classpath");
+            }
+
+            pixelfont = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(16f);
+
+        } catch (FontFormatException | IOException e) {
+            e.printStackTrace();
+            pixelfont = new Font("Serif", Font.BOLD, 16);
+        }
+
         turnLabel = new JLabel("");
         turnLabel.setForeground(Color.WHITE);
-        turnLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        turnLabel.setFont(pixelfont);
 
         JPanel turnPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         turnPanel.setOpaque(false);
@@ -49,13 +67,14 @@ public class ActionPanel extends JPanel {
         defLabel = new JLabel("DEF: -");
         energyLabel = new JLabel("Energy: -");
 
-        nameLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        hpLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        nameLabel.setFont(pixelfont.deriveFont(20f));
+        hpLabel.setFont(pixelfont.deriveFont(14f));
 
         for (JLabel l : new JLabel[]{
                 nameLabel, hpLabel, atkLabel, magicAtkLabel, defLabel, energyLabel
         }) {
             l.setForeground(Color.WHITE);
+            l.setFont(pixelfont);
         }
 
         JPanel row1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 0));
@@ -87,11 +106,14 @@ public class ActionPanel extends JPanel {
                 BorderFactory.createEmptyBorder(15, 15, 5, 15)
         );
 
-        moveButton = new JButton("Move");
-        attackButton = new JButton("Attack");
+        moveButton = new JButton("MOVE");
+        attackButton = new JButton("ATTACK");
 
         moveButton.setEnabled(false);
         attackButton.setEnabled(false);
+
+        moveButton.setBackground(new Color(52, 90, 192, 255));
+        attackButton.setBackground(new Color(225, 54, 94, 255));
 
         buttonsPanel.add(moveButton);
         buttonsPanel.add(attackButton);
@@ -144,7 +166,6 @@ public class ActionPanel extends JPanel {
                     label + " (" + a.getEnergyCost() + ")"
                 );
 
-                // ✅ MULTI-LINE TOOLTIP SUPPORT
                 if (desc != null && !desc.isEmpty()) {
                     item.setToolTipText(
                         "<html>" + desc.replace("\n", "<br>") + "</html>"
@@ -159,15 +180,19 @@ public class ActionPanel extends JPanel {
                     Action.TargetType type = a.getTargetType();
 
                     if (type == Action.TargetType.ENEMY) {
+
                         board.setActionMode(Board.ActionMode.ATTACK);
                         board.showAttackHighlightsFor(selectedUnit);
 
                     } else if (type == Action.TargetType.ALLY) {
+
                         board.setActionMode(Board.ActionMode.ALLY_TARGET);
                         board.showAllyHighlightsFor(selectedUnit);
 
                     } else if (type == Action.TargetType.SELF) {
-                        // Execute immediately on self
+
+                        board.beginAction(selectedUnit, a.getName());
+
                         a.execute(
                             board,
                             selectedUnit,
@@ -175,17 +200,36 @@ public class ActionPanel extends JPanel {
                             selectedUnit.getY()
                         );
 
+                        board.endAction();
+
+                        selectedUnit.spendEnergy(a.getEnergyCost());
                         selectedUnit.hasActedThisTurn = true;
+
                         board.setActionMode(Board.ActionMode.NONE);
+
+                        if (board.allCurrentTeamActed()) {
+                            board.endTurn();
+                        }
 
                     } else if (type == Action.TargetType.GLOBAL) {
-                        // Execute immediately, no target
+
+                        board.beginAction(selectedUnit, a.getName());
+
                         a.execute(board, selectedUnit, -1, -1);
 
+                        board.endAction();
+
+                        selectedUnit.spendEnergy(a.getEnergyCost());
                         selectedUnit.hasActedThisTurn = true;
+
                         board.setActionMode(Board.ActionMode.NONE);
+
+                        if (board.allCurrentTeamActed()) {
+                            board.endTurn();
+                        }
                     }
                 });
+
 
 
                 menu.add(item);

@@ -17,8 +17,8 @@ public class Buffer extends Unit {
         this.maxHp = 1300;
         this.curHp = maxHp;
         this.atk = 100;
-        this.magicAtk = 120;
-        this.def = 140;
+        this.magicAtk = 170;
+        this.def = 130;
         this.energy = 2;
         this.maxEnergy = 6;
 
@@ -36,7 +36,6 @@ public class Buffer extends Unit {
             256, 256, Image.SCALE_SMOOTH
         );
 
-        // === SKILL DESCRIPTIONS (UI) ===
         this.basicDesc =
             "<html><b>Forbidden Knowledge</b><br>"
             + "Genesis Sage recalls the falsifying prophecy and redirects it to one designated enemy "

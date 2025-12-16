@@ -31,9 +31,8 @@ public class ShadowsRise implements Action {
     @Override
     public void execute(Board board, Unit user, int col, int row) {
 
-        int damage = (int)(user.atk * 2.5);
+        int damage = (int)(user.atk * 2.2);
 
-        // 3x3 AoE centered on target
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = -1; dy <= 1; dy++) {
 

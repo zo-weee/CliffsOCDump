@@ -16,9 +16,9 @@ public class Healer extends Unit {
 
         this.maxHp = 2300;
         this.curHp = maxHp;
-        this.atk = 100;
-        this.magicAtk = 90;
-        this.def = 210;
+        this.atk = 140;
+        this.magicAtk = 190;
+        this.def = 170;
         this.energy = 2;
         this.maxEnergy = 4;
 

@@ -55,7 +55,6 @@ public class Board extends JPanel {
         this(selectedUnits, null, EnvironmentType.GRASS);
     }
 
-
     private void loadEnvironment(EnvironmentType env) {
         switch (env) {
             case GRASS:
@@ -97,15 +96,15 @@ public class Board extends JPanel {
         }
     }
 
-    public Board( ArrayList<Unit> selectedUnits, ActionPanel actionPanel, EnvironmentType environment) {
+    public Board(ArrayList<Unit> selectedUnits, ActionPanel actionPanel, EnvironmentType environment) {
 
         this.units = selectedUnits;
         this.actionPanel = actionPanel;
 
         int width = cols * tileSize + offsetX * 2;
         int height = rows * tileSize + offsetY * 2;
-        this.setPreferredSize(new Dimension(width, height));
-        this.setBackground(Color.BLACK);
+        setPreferredSize(new Dimension(width, height));
+        setBackground(Color.BLACK);
 
         placeInitialUnits();
         loadEnvironment(environment);
@@ -134,24 +133,21 @@ public class Board extends JPanel {
 
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
-                if (terrain[r][c]) {
-                    tileImages[r][c] =
-                        passableTiles[rng.nextInt(passableTiles.length)];
-                } else {
-                    tileImages[r][c] = tileBlocked;
-                }
+                tileImages[r][c] = terrain[r][c]
+                    ? passableTiles[rng.nextInt(passableTiles.length)]
+                    : tileBlocked;
             }
         }
-        
+
         clearSpawnRows();
 
         if (!hasAnyEnemies()) {
             spawnDummyEnemies();
         }
 
-        if (this.actionPanel != null) {
-            this.actionPanel.setBoard(this);
-            this.actionPanel.setCurrentTurn(currentTurn);
+        if (actionPanel != null) {
+            actionPanel.setBoard(this);
+            actionPanel.setCurrentTurn(currentTurn);
         }
 
         new Timer(16, e -> {
@@ -160,6 +156,13 @@ public class Board extends JPanel {
             }
             repaint();
         }).start();
+    }
+
+
+    private String unitLabel(Unit u) {
+        if (u == null) return "Unknown";
+        String owner = (u.team == null) ? "?" : p(u.team);
+        return owner + "'s " + u.name;
     }
 
     private void clearSpawnRows() {
@@ -324,13 +327,14 @@ public class Board extends JPanel {
 
         target.takeDamage(finalDamage);
 
-        String src = (logActor != null) ? ("[" + p(logActor.team) + "] " + logActor.name) : "[System]";
-        logLine("  - " + target.name + " takes " + finalDamage +
-                " dmg (HP: " + target.curHp + "/" + target.maxHp + ")  <" + src + ">");
+        String targetLabel = unitLabel(target);
+
+        logLine("  - " + targetLabel + " takes " + finalDamage +
+            " dmg (HP: " + target.curHp + "/" + target.maxHp + ")");
 
         if (!target.isAlive()) {
             units.remove(target);
-            logLine("    * " + target.name + " was defeated!");
+            logLine("    * " + targetLabel + " was defeated!");
         }
 
         repaint();
@@ -343,9 +347,10 @@ public class Board extends JPanel {
         target.curHp = Math.min(target.maxHp, target.curHp + healAmount);
         int healed = target.curHp - before;
 
-        String src = (logActor != null) ? ("[" + p(logActor.team) + "] " + logActor.name) : "[System]";
-        logLine("  - " + target.name + " healed +" + healed +
-                " (HP: " + target.curHp + "/" + target.maxHp + ")  <" + src + ">");
+        String targetLabel = unitLabel(target);
+
+        logLine("  - " + targetLabel + " healed +" + healed +
+                " (HP: " + target.curHp + "/" + target.maxHp + ")");
 
         repaint();
     }

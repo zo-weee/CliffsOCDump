@@ -1,5 +1,6 @@
 package main;
 
+import audio.MusicPlayer;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -7,9 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import javax.swing.*;
-// import units.SelectedTeam;
-
-import audio.MusicPlayer;
 
 public class Menu extends JPanel {
 
@@ -122,7 +120,7 @@ public class Menu extends JPanel {
         });
 
         music = new MusicPlayer();
-        music.play("src/audio/main.wav", true);
+        music.play(getClass().getResource("/audio/main.wav"), true);
 
         getDamnBorderOutBruh(startButton);
         getDamnBorderOutBruh(exitButton);
