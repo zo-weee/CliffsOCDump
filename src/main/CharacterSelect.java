@@ -26,7 +26,7 @@ public class CharacterSelect extends JPanel {
     JButton addToTeamBtn;
     JButton confirmBtn;
 
-    private Image background;
+    Image background;
     Font headerfont;
     Font pfont;
 
@@ -97,6 +97,8 @@ public class CharacterSelect extends JPanel {
             portraitBtn.addActionListener(e -> {
                 selectedUnit = u;
                 showUnitInfo(u);
+                background = u.picSelectBG;
+                repaint();
             });
 
             leftPanel.add(portraitBtn);
@@ -140,7 +142,17 @@ public class CharacterSelect extends JPanel {
         infoBottom.setOpaque(false);
         infoBottom.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 20));
 
-        JPanel skillsBox = new JPanel();
+        JPanel skillsBox = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setColor(new Color(0, 0, 0, 120)); // black, ~60% opacity
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 0, 0);
+                g2.dispose();
+            }
+        };
         skillsBox.setOpaque(false);
         skillsBox.setLayout(new BoxLayout(skillsBox, BoxLayout.Y_AXIS));
 
@@ -210,7 +222,11 @@ public class CharacterSelect extends JPanel {
         confirmBtn.setFont(headerfont);
         confirmBtn.setForeground(Color.WHITE);
 
-        confirmBtn.addActionListener(e -> confirmTeam());
+        confirmBtn.addActionListener(e -> {
+            confirmTeam();
+            background = new ImageIcon(getClass().getResource("/assets/notsotempbg.png")).getImage();
+            repaint();
+        });
 
         confirmBtn.addMouseListener(new MouseAdapter() {
             @Override
@@ -321,6 +337,10 @@ public class CharacterSelect extends JPanel {
         basicLabel.setFont(pfont);
         skillLabel.setFont(pfont);
         ultiLabel.setFont(pfont);
+
+        basicLabel.setForeground(u.flairColor);
+        skillLabel.setForeground(u.flairColor);
+        ultiLabel.setForeground(u.flairColor);
 
         nameLabel.setText("<html>" + u.name + "</html>");
         statsLabel.setText(

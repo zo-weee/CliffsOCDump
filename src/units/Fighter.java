@@ -36,9 +36,13 @@ public class Fighter extends Unit {
             256, 256, Image.SCALE_SMOOTH
         );
 
+        this.picSelectBG = new ImageIcon(getClass().getResource("/assets/Fighter/rokoroubg.png")).getImage();
+
+        this.flairColor = new Color(204, 153, 255, 255);
+
         this.basicDesc = 
             "<html><b>Void Slash</b>" + "<br>"
-            + "Rokorou dashes and cuts through a SINGLE enemy dealing 110% of his current attack"
+            + "Rokorou dashes and cuts through a SINGLE enemy dealing 110% of his current attack."
         ;
 
         this.skillDesc =

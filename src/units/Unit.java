@@ -49,10 +49,13 @@ public abstract class Unit {
 
     public Image picSmall;
     public Image picLarge;
+    public Image picSelectBG;
 
     public String basicDesc;
     public String skillDesc;
     public String ultimateDesc;
+
+    public Color flairColor;
 
     public Image[] walkFrames; 
     public int walkFrameIndex = 0;

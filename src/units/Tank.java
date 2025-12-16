@@ -28,6 +28,8 @@ public class Tank extends Unit {
         ImageIcon small = new ImageIcon(getClass().getResource("/assets/Tank/picSmall.png"));
         ImageIcon large = new ImageIcon(getClass().getResource("/assets/Tank/picLarge.png"));
 
+        this.picSelectBG = new ImageIcon(getClass().getResource("/assets/Tank/cerberusbg.png")).getImage();
+
         this.picSmall = small.getImage().getScaledInstance(
             128, 128, Image.SCALE_SMOOTH
         );
@@ -35,6 +37,8 @@ public class Tank extends Unit {
         this.picLarge = large.getImage().getScaledInstance(
             256, 256, Image.SCALE_SMOOTH
         );
+
+        this.flairColor = new Color(252, 198, 50, 255);
 
         this.basicDesc = 
             "<html><b>Lone Wolf Charge</b>" + "<br>"

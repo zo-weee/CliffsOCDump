@@ -28,6 +28,8 @@ public class Buffer extends Unit {
         ImageIcon small = new ImageIcon(getClass().getResource("/assets/Buffer/picSmall.png"));
         ImageIcon large = new ImageIcon(getClass().getResource("/assets/Buffer/picLarge.png"));
 
+        this.picSelectBG = new ImageIcon(getClass().getResource("/assets/Buffer/sagebg.png")).getImage();
+
         this.picSmall = small.getImage().getScaledInstance(
             128, 128, Image.SCALE_SMOOTH
         );
@@ -35,6 +37,8 @@ public class Buffer extends Unit {
         this.picLarge = large.getImage().getScaledInstance(
             256, 256, Image.SCALE_SMOOTH
         );
+
+        this.flairColor = new Color(102, 178, 255, 255);
 
         this.basicDesc =
             "<html><b>Forbidden Knowledge</b><br>"

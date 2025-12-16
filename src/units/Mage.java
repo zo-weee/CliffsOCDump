@@ -28,6 +28,8 @@ public class Mage extends Unit {
         ImageIcon small = new ImageIcon(getClass().getResource("/assets/Mage/picSmall.png"));
         ImageIcon large = new ImageIcon(getClass().getResource("/assets/Mage/picLarge.png"));
 
+        this.picSelectBG = new ImageIcon(getClass().getResource("/assets/Mage/presabg.png")).getImage();
+
         this.picSmall = small.getImage().getScaledInstance(
             128, 128, Image.SCALE_SMOOTH
         );
@@ -35,6 +37,8 @@ public class Mage extends Unit {
         this.picLarge = large.getImage().getScaledInstance(
             256, 256, Image.SCALE_SMOOTH
         );
+
+        this.flairColor = new Color(204, 255, 153, 255);
 
         this.basicDesc = 
             "<html><b>Queen's Torment</b>" + "<br>"

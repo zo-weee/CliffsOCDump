@@ -35,6 +35,10 @@ public class Healer extends Unit {
             256, 256, Image.SCALE_SMOOTH
         );
 
+        this.picSelectBG = new ImageIcon(getClass().getResource("/assets/Healer/eleanorbg.png")).getImage();
+
+        this.flairColor = new Color(255, 128, 0, 255);
+
         this.basicDesc = 
             "<html><b>Light Drive</b>" + "<br>"
             + "Eleanor slashes her spear to one enemy dealing 130% of her attack plus 20% of her magic attack."
