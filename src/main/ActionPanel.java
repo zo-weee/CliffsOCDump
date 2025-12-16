@@ -107,7 +107,11 @@ public class ActionPanel extends JPanel {
         );
 
         moveButton = new JButton("MOVE");
+        moveButton.setForeground(Color.WHITE);
+        moveButton.setFont(pixelfont.deriveFont(24f));
         attackButton = new JButton("ATTACK");
+        attackButton.setForeground(Color.WHITE);
+        attackButton.setFont(pixelfont.deriveFont(24f));
 
         moveButton.setEnabled(false);
         attackButton.setEnabled(false);

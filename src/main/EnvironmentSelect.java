@@ -70,8 +70,14 @@ public class EnvironmentSelect extends JPanel {
         this.add(title, gbc);
 
         JButton grass = new JButton("Grass");
+        grass.setForeground(Color.WHITE);
+        grass.setFont(pixelfont.deriveFont(24f));
         JButton castle = new JButton("Castle");
+        castle.setForeground(Color.WHITE);
+        castle.setFont(pixelfont.deriveFont(24f));
         JButton galaxy = new JButton("Galaxy");
+        galaxy.setForeground(Color.WHITE);
+        galaxy.setFont(pixelfont.deriveFont(24f));
 
         gbc.gridy = 1;
         this.add(grass, gbc);

@@ -160,6 +160,8 @@ public class CharacterSelect extends JPanel {
 
         addToTeamBtn = new JButton("Add to Team");
         addToTeamBtn.setVisible(false);
+        addToTeamBtn.setFont(headerfont);
+        addToTeamBtn.setForeground(Color.WHITE);
 
         addToTeamBtn.addActionListener(e -> {
             if (selectedUnit == null) return;
@@ -206,6 +208,7 @@ public class CharacterSelect extends JPanel {
         confirmBtn = new JButton(playerNumber == 1 ? "READY" : "START");
         confirmBtn.setPreferredSize(new Dimension(110, 70));
         confirmBtn.setFont(headerfont);
+        confirmBtn.setForeground(Color.WHITE);
 
         confirmBtn.addActionListener(e -> confirmTeam());
 

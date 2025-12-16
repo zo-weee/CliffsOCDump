@@ -150,14 +150,11 @@ public class Menu extends JPanel {
         drawWoodBox(g2, boxX, exitBoxY);
     }
 
-    // ===== CUSTOM WOOD BOX =====
     private void drawWoodBox(Graphics2D g2, int x, int y) {
 
-        // outer border (dark)
         g2.setColor(new Color(90, 60, 30));
         g2.fillRoundRect(x, y, BOX_WIDTH, BOX_HEIGHT, 18, 18);
 
-        // inner fill (light wood)
         g2.setColor(new Color(170, 120, 70));
         g2.fillRoundRect(
             x + 4,
@@ -168,7 +165,6 @@ public class Menu extends JPanel {
             14
         );
 
-        // highlight line
         g2.setColor(new Color(200, 160, 110, 120));
         g2.drawLine(x + 10, y + 12, x + BOX_WIDTH - 10, y + 12);
     }
