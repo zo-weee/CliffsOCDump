@@ -1,18 +1,18 @@
 package audio;
 
+import java.net.URL;
 import javax.sound.sampled.*;
-import java.io.File;
 
 public class MusicPlayer {
 
     private Clip clip;
 
-    public void play(String path, boolean loop) {
+    public void play(URL resource, boolean loop) {
         stop(); // stop previous music
 
         try {
             AudioInputStream ais =
-                AudioSystem.getAudioInputStream(new File(path));
+                AudioSystem.getAudioInputStream(resource);
 
             clip = AudioSystem.getClip();
             clip.open(ais);
