@@ -165,13 +165,19 @@ public class CharacterSelect extends JPanel {
             if (selectedUnit == null) return;
             if (chosenUnits.size() >= 4) return;
 
-            Unit copy = selectedUnit.createCopy(); // IMPORTANT
+            if (alreadyChosen(selectedUnit)) {
+                System.out.println("You already selected this character!");
+                return;
+            }
+
+            Unit copy = selectedUnit.createCopy();
             chosenUnits.add(copy);
 
             int idx = chosenUnits.size() - 1;
             teamSlots[idx].setIcon(new ImageIcon(selectedUnit.picSmall));
             teamSlots[idx].setText("");
         });
+
 
         addToTeamBtn.addMouseListener(new MouseAdapter() {
             @Override
@@ -250,6 +256,16 @@ public class CharacterSelect extends JPanel {
     }
 
     /* ================= LOGIC ================= */
+
+    private boolean alreadyChosen(Unit unit) {
+        for (Unit u : chosenUnits) {
+            if (u.getClass() == unit.getClass()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     private void confirmTeam() {
     if (chosenUnits.size() != 4) return;
