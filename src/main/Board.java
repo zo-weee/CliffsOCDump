@@ -303,8 +303,10 @@ public class Board extends JPanel {
             return;
         }
 
-        int rawDamage = attacker.atk;
-        int finalDamage = Math.max(0, rawDamage - target.def);
+        double damageMultiplier = attacker.atk / (double)(attacker.atk + target.def);
+        int finalDamage = (int)(attacker.atk * damageMultiplier);
+        finalDamage = Math.max(1, finalDamage);
+
 
         target.takeDamage(finalDamage);
 
