@@ -1,6 +1,5 @@
 package main;
 
-import audio.MusicPlayer;
 import java.awt.*;
 import java.util.ArrayList;
 import javax.swing.*;
@@ -11,7 +10,6 @@ public class GameScreen extends JPanel {
     private Board board;
     private ActionPanel actionPanel;
     private StatusBoard statusBoard;   
-    private MusicPlayer music;
 
     public GameScreen(JFrame frame, ArrayList<Unit> team) {
         setLayout(new BorderLayout());
@@ -30,9 +28,8 @@ public class GameScreen extends JPanel {
         add(statusBoard, BorderLayout.EAST);          
         add(actionPanel, BorderLayout.SOUTH);
         
-        music = new MusicPlayer();
-        music.play(getClass().getResource("/audio/battle.wav"), true);
-        music.setVolume(0.7f);
+        Main.music.stop();
+        Main.music.play(getClass().getResource("/audio/battle.wav"), true);
     }
 
     public GameScreen(JFrame frame,
@@ -60,9 +57,8 @@ public class GameScreen extends JPanel {
         add(statusBoard, BorderLayout.EAST);
         add(actionPanel, BorderLayout.SOUTH);
 
-        music = new MusicPlayer();
-        music.play(getClass().getResource("/audio/battle.wav"), true);
-        music.setVolume(0.7f);
+        Main.music.stop();
+        Main.music.play(getClass().getResource("/audio/battle.wav"), true);
     }
 
     public Board getBoard() {

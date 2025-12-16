@@ -1,6 +1,5 @@
 package main;
 
-import audio.MusicPlayer;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -12,7 +11,6 @@ import javax.swing.*;
 public class Menu extends JPanel {
 
     private Image background;
-    private MusicPlayer music;
     Font pixelfont;
     Font smallpixfont;
 
@@ -86,7 +84,6 @@ public class Menu extends JPanel {
         this.add(exitButton, gbc);
 
         startButton.addActionListener(e -> {
-            music.stop();
             frame.setContentPane(new CharacterSelect(frame, 1, new ArrayList<>()));
             frame.pack();
             frame.revalidate();
@@ -118,9 +115,6 @@ public class Menu extends JPanel {
                 exitButton.setText("Exit");
             }
         });
-
-        music = new MusicPlayer();
-        music.play(getClass().getResource("/audio/main.wav"), true);
 
         getDamnBorderOutBruh(startButton);
         getDamnBorderOutBruh(exitButton);
