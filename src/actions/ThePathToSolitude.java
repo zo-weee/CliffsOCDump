@@ -18,6 +18,6 @@ public class ThePathToSolitude implements Action {
     public void execute(Board b, Unit u, int c, int r) {
         Unit t = b.getUnit(c, r);
         if (t == null) return;
-        t.gainEnergy(4); // ✅ clamps
+        t.gainEnergy(4);
     }
 }

@@ -22,8 +22,8 @@ public class APromiseToLife implements Action {
         int heal = (int)(u.maxHp * 0.40);
 
         for (Unit t : snapshot) {
-            if (t != null && t.isAlive() && t.team == u.team) { // ✅ was !=
-                b.applyHeal(t, heal); // ✅ clamps + logs
+            if (t != null && t.isAlive() && t.team == u.team) { 
+                b.applyHeal(t, heal); 
             }
         }
     }

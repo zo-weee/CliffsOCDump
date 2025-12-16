@@ -42,7 +42,7 @@ public class Board extends JPanel {
     public int offsetY = 40;
 
     // ===== Damage tuning (fixes "0 dmg") =====
-    private static final double DEF_SCALE = 1000.0; // matches your DEF magnitude (~hundreds)
+    private static final double DEF_SCALE = 1000.0; 
     private static final int MIN_DAMAGE = 1;
 
     // ===== Units / UI =====
@@ -71,7 +71,7 @@ public class Board extends JPanel {
         this.units = (selectedUnits == null) ? new ArrayList<>() : new ArrayList<>(selectedUnits);
         this.actionPanel = actionPanel;
 
-        dedupeUnitsByIdentity(); // ✅ fixes repeated logs if same object added twice
+        dedupeUnitsByIdentity(); 
 
         int width = cols * tileSize + offsetX * 2;
         int height = rows * tileSize + offsetY * 2;
@@ -201,7 +201,7 @@ public class Board extends JPanel {
     }
 
     // ==============================
-    // Damage / Heal (fix "0 dmg")
+    // Damage / Heal 
     // ==============================
 
     private int mitigateDamage(int rawDamage, Unit target) {
@@ -308,7 +308,6 @@ public class Board extends JPanel {
         setHighlights(tiles);
     }
 
-    // ✅ NEW: highlight based on action.canTarget (works for allies too)
     public void showActionTargetsFor(Unit user, Action action) {
         if (user == null || action == null) {
             attackHighlightsSupport = false;

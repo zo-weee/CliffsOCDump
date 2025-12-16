@@ -22,7 +22,7 @@ public class AbsoluteTyranny implements Action {
         int amount = 68 + (int)(u.def * 0.6);
 
         for (Unit t : snapshot) {
-            if (t != null && t.isAlive() && t.team == u.team) { // ✅ was !=
+            if (t != null && t.isAlive() && t.team == u.team) { 
                 t.def += amount;
             }
         }
