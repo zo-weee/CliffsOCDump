@@ -13,7 +13,16 @@ public class Menu extends JPanel {
     private Image background;
     private Image titleImage;
 
-    Font buttonFont;
+    private Font buttonFont;
+
+    // ===== CONSTANTS =====
+    private static final int BOX_WIDTH = 360;
+    private static final int BOX_HEIGHT = 70;
+    private static final int BOX_SPACING = 20;
+
+    private static final int TITLE_Y = 0;
+    private static final int TITLE_TARGET_WIDTH = 700;
+    private static final int TITLE_SPACING = 40;
 
     static void getDamnBorderOutBruh(JButton b) {
         b.setBorder(BorderFactory.createEmptyBorder());
@@ -22,11 +31,6 @@ public class Menu extends JPanel {
         b.setContentAreaFilled(false);
         b.setOpaque(false);
     }
-
-    // ===== BOX DIMENSIONS =====
-    private final int BOX_WIDTH = 360;
-    private final int BOX_HEIGHT = 70;
-    private final int BOX_SPACING = 20;
 
     public Menu(JFrame frame) {
 
@@ -41,7 +45,7 @@ public class Menu extends JPanel {
 
         setPreferredSize(new Dimension(width, height));
         setBackground(Color.BLACK);
-        setLayout(null); // 🔥 manual placement on purpose
+        setLayout(null); // manual placement
 
         // ===== LOAD IMAGES =====
         background = new ImageIcon(
@@ -73,11 +77,9 @@ public class Menu extends JPanel {
         getDamnBorderOutBruh(exitButton);
 
         // ===== POSITIONING =====
-        int titleY = 60;
-        int startBoxY = titleY + titleImage.getHeight(this) + 40;
-        int exitBoxY = startBoxY + BOX_HEIGHT + BOX_SPACING;
-
         int boxX = (width - BOX_WIDTH) / 2;
+        int startBoxY = TITLE_Y + getScaledTitleHeight() + TITLE_SPACING;
+        int exitBoxY = startBoxY + BOX_HEIGHT + BOX_SPACING;
 
         startButton.setBounds(boxX, startBoxY, BOX_WIDTH, BOX_HEIGHT);
         exitButton.setBounds(boxX, exitBoxY, BOX_WIDTH, BOX_HEIGHT);
@@ -87,7 +89,9 @@ public class Menu extends JPanel {
 
         // ===== BUTTON ACTIONS =====
         startButton.addActionListener(e -> {
-            frame.setContentPane(new CharacterSelect(frame, 1, new ArrayList<>()));
+            frame.setContentPane(
+                new CharacterSelect(frame, 1, new ArrayList<>())
+            );
             frame.pack();
             frame.revalidate();
             frame.repaint();
@@ -120,6 +124,17 @@ public class Menu extends JPanel {
         });
     }
 
+    // ===== SCALE HELPER =====
+    private int getScaledTitleHeight() {
+        if (titleImage == null) return 0;
+
+        int originalWidth = titleImage.getWidth(this);
+        int originalHeight = titleImage.getHeight(this);
+
+        double scale = (double) TITLE_TARGET_WIDTH / originalWidth;
+        return (int) (originalHeight * scale);
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -129,21 +144,33 @@ public class Menu extends JPanel {
             RenderingHints.KEY_ANTIALIASING,
             RenderingHints.VALUE_ANTIALIAS_ON
         );
+        g2.setRenderingHint(
+            RenderingHints.KEY_INTERPOLATION,
+            RenderingHints.VALUE_INTERPOLATION_BILINEAR
+        );
 
         // ===== BACKGROUND =====
         if (background != null) {
             g2.drawImage(background, 0, 0, this);
         }
 
-        // ===== TITLE =====
+        // ===== TITLE (SCALED) =====
         if (titleImage != null) {
-            int x = (getWidth() - titleImage.getWidth(this)) / 2;
-            g2.drawImage(titleImage, x, 60, this);
+
+            int scaledHeight = getScaledTitleHeight();
+            int x = (getWidth() - TITLE_TARGET_WIDTH) / 2;
+
+            g2.drawImage(
+                titleImage,
+                x, TITLE_Y,
+                TITLE_TARGET_WIDTH, scaledHeight,
+                this
+            );
         }
 
         // ===== DRAW "WOODEN" BOXES =====
         int boxX = (getWidth() - BOX_WIDTH) / 2;
-        int startBoxY = 60 + titleImage.getHeight(this) + 40;
+        int startBoxY = TITLE_Y + getScaledTitleHeight() + TITLE_SPACING;
         int exitBoxY = startBoxY + BOX_HEIGHT + BOX_SPACING;
 
         drawWoodBox(g2, boxX, startBoxY);
