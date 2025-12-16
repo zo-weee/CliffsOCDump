@@ -64,26 +64,29 @@ public class CharacterSelect extends JPanel {
 
         background = new ImageIcon(getClass().getResource("/assets/notsotempbg.png")).getImage();
 
-try {
-    InputStream is = Menu.class.getResourceAsStream(
-        "/assets/PixelifySans-VariableFont_wght.ttf"
-    );
+        try {
+            InputStream is = Menu.class.getResourceAsStream(
+                "/assets/PixelifySans-VariableFont_wght.ttf"
+            );
 
-    if (is == null) {
-        throw new RuntimeException("Font stream is null");
-    }
+            if (is == null) {
+                throw new RuntimeException("Font stream is null");
+            }
 
-    headerfont = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(24f);
-    pfont = headerfont.deriveFont(16f);
+            headerfont = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(24f);
+            pfont = headerfont.deriveFont(16f);
 
-} catch (Exception e) {
-    System.out.println("FONT LOAD FAILED IN CharacterSelect");
-    e.printStackTrace();   // 👈 THIS IS THE IMPORTANT LINE
-    headerfont = new Font("Serif", Font.BOLD, 36);
-    pfont = headerfont.deriveFont(18f);
-}
+            GraphicsEnvironment ge =
+                    GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(headerfont);
 
 
+        } catch (Exception e) {
+            System.out.println("FONT LOAD FAILED IN CharacterSelect");
+            e.printStackTrace();   // 👈 THIS IS THE IMPORTANT LINE
+            headerfont = new Font("Serif", Font.BOLD, 36);
+            pfont = headerfont.deriveFont(18f);
+        }
 
         /* ========== LEFT PANEL ========== */
         JPanel leftPanel = new JPanel();
@@ -135,6 +138,8 @@ try {
         statsLabel.setForeground(Color.WHITE);
         nameLabel.setFont(headerfont);
         statsLabel.setFont(pfont);
+
+        System.out.println(headerfont.getFontName());
 
         statsPanel.add(nameLabel);
         statsPanel.add(Box.createVerticalStrut(10));
@@ -340,6 +345,8 @@ try {
                 )
         ));
 
+
+
         basicLabel.setFont(pfont);
         skillLabel.setFont(pfont);
         ultiLabel.setFont(pfont);
@@ -350,12 +357,18 @@ try {
 
         nameLabel.setText("<html>" + u.name + "</html>");
         statsLabel.setText(
-                "<html>Role: " + u.role + "<br><br>"
-                        + "HP: " + u.maxHp + "<br>"
-                        + "ATK: " + u.atk + "<br>"
-                        + "DEF: " + u.def + "<br>"
-                        + "Move: " + u.moveRange + "<br>"
-                        + "Range: " + u.attackRange + "</html>"
+            "<html><body style='"
+            + "font-family: Pixelify Sans Regular;"
+            + "font-size: 12px;"
+            + "margin: 0;"
+            + "padding: 0;'>"
+            + "Role: " + u.role + "<br><br>"
+            + "HP: " + u.maxHp + "<br>"
+            + "ATK: " + u.atk + "<br>"
+            + "DEF: " + u.def + "<br>"
+            + "Move: " + u.moveRange + "<br>"
+            + "Range: " + u.attackRange
+            + "</body></html>"
         );
 
         basicLabel.setText("<html><b>Basic:</b> " + u.basicDesc + "</html>");

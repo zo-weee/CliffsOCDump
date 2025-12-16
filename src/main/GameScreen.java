@@ -21,7 +21,15 @@ public class GameScreen extends JPanel {
         board.setStatusBoard(statusBoard); 
         
         board.setGameOverListener(winner -> {
-            frame.setContentPane(new GameOver(frame, winner));
+
+            // Decide which team won
+            java.util.List<Unit> winningUnits =
+                    winner == Unit.Team.ALLY ? team : new ArrayList<>();
+
+            frame.setContentPane(
+                new GameOver(frame, winner, winningUnits)
+            );
+
             frame.pack();
             frame.revalidate();
             frame.repaint();
@@ -57,7 +65,10 @@ public class GameScreen extends JPanel {
         board.setStatusBoard(statusBoard);
 
         board.setGameOverListener(winner -> {
-            frame.setContentPane(new GameOver(frame, winner));
+            frame.setContentPane(
+                new GameOver(frame, winner, winner == Unit.Team.ALLY ? teamP1 : teamP2)
+            );
+
             frame.pack();
             frame.revalidate();
             frame.repaint();
