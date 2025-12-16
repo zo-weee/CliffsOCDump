@@ -10,7 +10,6 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import units.Mage;
 import units.Unit;
-import main.EnvironmentType;
 
 public class Board extends JPanel {
 
@@ -48,8 +47,24 @@ public class Board extends JPanel {
     private List<Point> highlights = new ArrayList<>();
 
     private StatusBoard statusBoard;
-
     private Unit logActor = null;
+
+    private boolean gameOver = false;
+
+    public interface GameOverListener {
+        // winner == null means draw (both dead)
+        void onGameOver(Unit.Team winner);
+    }
+
+    private GameOverListener gameOverListener;
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public void setGameOverListener(GameOverListener l) {
+        this.gameOverListener = l;
+    }
 
     public Board(ArrayList<Unit> selectedUnits) {
         this(selectedUnits, null, EnvironmentType.GRASS);
@@ -152,9 +167,8 @@ public class Board extends JPanel {
         }
 
         new Timer(16, e -> {
-            for (Unit u : units) {
-                u.updateAnimation();
-            }
+            if (gameOver) return;
+            for (Unit u : units) u.updateAnimation();
             repaint();
         }).start();
     }
@@ -338,6 +352,7 @@ public class Board extends JPanel {
         if (!target.isAlive()) {
             units.remove(target);
             logLine("    * " + targetLabel + " was defeated!");
+            checkGameOver();
         }
 
         repaint();
@@ -469,8 +484,49 @@ public class Board extends JPanel {
             actionPanel.setCurrentTurn(currentTurn);
         }
 
+        checkGameOver();
         repaint();
     }
+
+    private void checkGameOver() {
+        boolean allyAlive = false;
+        boolean enemyAlive = false;
+
+        for (Unit u : units) {
+            if (u == null || !u.isAlive()) continue;
+            if (u.team == Unit.Team.ALLY) allyAlive = true;
+            if (u.team == Unit.Team.ENEMY) enemyAlive = true;
+        }
+
+        if (!allyAlive || !enemyAlive) {
+            Unit.Team winner;
+            if (allyAlive && !enemyAlive) winner = Unit.Team.ALLY;
+            else if (!allyAlive && enemyAlive) winner = Unit.Team.ENEMY;
+            else winner = null; 
+
+            triggerGameOver(winner);
+        }
+    }
+
+    private void triggerGameOver(Unit.Team winner) {
+        if (gameOver) return;   
+        gameOver = true;
+
+        clearSelection();
+        clearHighlights();
+        selectedAction = null;
+        currentMode = ActionMode.NONE;
+
+        String msg = (winner == Unit.Team.ALLY) ? "=== GAME OVER: PLAYER 1 WINS ==="
+                : (winner == Unit.Team.ENEMY) ? "=== GAME OVER: PLAYER 2 WINS ==="
+                : "=== GAME OVER: DRAW ===";
+        logLine(msg);
+
+        if (gameOverListener != null) {
+            gameOverListener.onGameOver(winner);
+        }
+    }
+
 
     public void setStatusBoard(StatusBoard sb) {
         this.statusBoard = sb;
