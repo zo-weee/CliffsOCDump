@@ -18,7 +18,7 @@ public class LeviathanWill implements Action {
 
     @Override
     public boolean canTarget(Board b, Unit u, int c, int r) {
-        return true;
+        return false;
     }
 
     public TargetType getTargetType() {
