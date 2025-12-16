@@ -9,27 +9,23 @@ public class GameScreen extends JPanel {
 
     private Board board;
     private ActionPanel actionPanel;
-    private StatusBoard statusBoard;   
+    private StatusBoard statusBoard;
 
+    /* ===== SINGLE-PLAYER / DEFAULT (GRASS) ===== */
     public GameScreen(JFrame frame, ArrayList<Unit> team) {
         setLayout(new BorderLayout());
 
         actionPanel = new ActionPanel();
-        statusBoard = new StatusBoard();             
+        statusBoard = new StatusBoard();
 
         board = new Board(team, actionPanel, EnvironmentType.GRASS);
-        board.setStatusBoard(statusBoard); 
-        
-        board.setGameOverListener(winner -> {
+        board.setStatusBoard(statusBoard);
 
-            // Decide which team won
+        board.setGameOverListener(winner -> {
             java.util.List<Unit> winningUnits =
                     winner == Unit.Team.ALLY ? team : new ArrayList<>();
 
-            frame.setContentPane(
-                new GameOver(frame, winner, winningUnits)
-            );
-
+            frame.setContentPane(new GameOver(frame, winner, winningUnits));
             frame.pack();
             frame.revalidate();
             frame.repaint();
@@ -40,17 +36,17 @@ public class GameScreen extends JPanel {
         board.addMouseMotionListener(inputHandler);
 
         add(board, BorderLayout.CENTER);
-        add(statusBoard, BorderLayout.EAST);          
+        add(statusBoard, BorderLayout.EAST);
         add(actionPanel, BorderLayout.SOUTH);
-        
-        Main.music.stop();
-        Main.music.play(getClass().getResource("/audio/battle.wav"), true);
+
+        playBattleMusic(EnvironmentType.GRASS);
     }
 
+    /* ===== MULTIPLAYER / ENVIRONMENT SELECT ===== */
     public GameScreen(JFrame frame,
-                  ArrayList<Unit> teamP1,
-                  ArrayList<Unit> teamP2,
-                  EnvironmentType env) {
+                      ArrayList<Unit> teamP1,
+                      ArrayList<Unit> teamP2,
+                      EnvironmentType env) {
 
         setLayout(new BorderLayout());
 
@@ -66,9 +62,9 @@ public class GameScreen extends JPanel {
 
         board.setGameOverListener(winner -> {
             frame.setContentPane(
-                new GameOver(frame, winner, winner == Unit.Team.ALLY ? teamP1 : teamP2)
+                new GameOver(frame, winner,
+                    winner == Unit.Team.ALLY ? teamP1 : teamP2)
             );
-
             frame.pack();
             frame.revalidate();
             frame.repaint();
@@ -82,8 +78,31 @@ public class GameScreen extends JPanel {
         add(statusBoard, BorderLayout.EAST);
         add(actionPanel, BorderLayout.SOUTH);
 
+        playBattleMusic(env);
+    }
+
+    /* ===== MUSIC HANDLER ===== */
+    private void playBattleMusic(EnvironmentType env) {
         Main.music.stop();
-        Main.music.play(getClass().getResource("/audio/battle.wav"), true);
+
+        String musicPath;
+
+        switch (env) {
+            case GRASS:
+                musicPath = "/audio/battle_grass.wav";
+                break;
+            case CASTLE:
+                musicPath = "/audio/battle_castle.wav";
+                break;
+            case GALAXY:
+                musicPath = "/audio/battle_stars.wav";
+                break;
+            default:
+                musicPath = "/audio/battle_grass.wav";
+                break;
+        }
+
+        Main.music.play(getClass().getResource(musicPath), true);
     }
 
     public Board getBoard() {
