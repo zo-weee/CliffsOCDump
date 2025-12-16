@@ -22,7 +22,7 @@ public class Tank extends Unit {
         this.energy = 2;
         this.maxEnergy = 5;
 
-        this.moveRange = 1;
+        this.moveRange = 3;
         this.attackRange = 10;
 
         ImageIcon small = new ImageIcon(getClass().getResource("/assets/Tank/picSmall.png"));
