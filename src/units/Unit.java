@@ -1,12 +1,12 @@
 package units;
 
-import java.awt.*;
 import actions.Action;
+import java.awt.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Iterator;
-import status.Status;
+import java.util.List;
 import main.Board;
+import status.Status;
 
 public abstract class Unit {
 
@@ -66,6 +66,8 @@ public abstract class Unit {
     public void takeDamage(int dmg){
         curHp -= dmg;
         if (curHp < 0) curHp = 0;
+
+        System.out.println("Damage taken! DMG: " + dmg);
     }
 
     public boolean hasEnoughEnergy(int cost) {

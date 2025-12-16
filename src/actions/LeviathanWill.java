@@ -1,32 +1,24 @@
 package actions;
 
 import main.Board;
-import units.Unit;
 import status.LeviathanWillStatus;
+import units.Unit;
 
 public class LeviathanWill implements Action {
 
-    @Override
-    public String getName() {
-        return "Leviathan's Will";
-    }
+    public String getName() { return "Leviathan's Will"; }
+    public int getEnergyCost() { return 5; }
 
     @Override
-    public int getEnergyCost() {
-        return 5;
-    }
+    public boolean isSupport() { return true; }
 
-    @Override
     public boolean canTarget(Board b, Unit u, int c, int r) {
-        return true; // self-cast ultimate
+        // ✅ only allow casting if not already active
+        return !u.hasStatus(LeviathanWillStatus.class);
     }
 
-    @Override
     public void execute(Board b, Unit u, int c, int r) {
-
-        // Prevent stacking
         if (u.hasStatus(LeviathanWillStatus.class)) return;
-
         u.addStatus(new LeviathanWillStatus(2));
     }
 }

@@ -1,16 +1,20 @@
 package actions;
 
 import main.Board;
-import units.Unit;
-import units.Fighter;
-import units.Mage;
 import units.Buffer;
+import units.Fighter;
 import units.Healer;
+import units.Mage;
 import units.Tank;
+import units.Unit;
 
 public class Enlightenment implements Action {
     public String getName() { return "Enlightenment"; }
     public int getEnergyCost() { return 3; }
+    
+    @Override
+    public boolean isSupport() { return true; }
+
 
     public boolean canTarget(Board b, Unit u, int c, int r) {
         Unit t = b.getUnit(c, r);

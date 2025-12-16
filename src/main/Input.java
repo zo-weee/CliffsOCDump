@@ -1,9 +1,8 @@
 package main;
 
-import units.Unit;
-
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import units.Unit;
 
 public class Input extends MouseAdapter {
 
@@ -99,40 +98,8 @@ public class Input extends MouseAdapter {
 
         // ================= ATTACK =================
         if (board.currentMode == Board.ActionMode.ATTACK) {
-
-
-
-            if (u.hasActedThisTurn) {
-                System.out.println("Unit already acted this turn.");
-                board.setActionMode(Board.ActionMode.NONE);
-                return;
-            }
-
-            if (board.selectedAction != null &&
-                board.selectedAction.canTarget(board, u, targetCol, targetRow)) {
-
-                int cost = board.selectedAction.getEnergyCost();
-
-                if (u.hasEnoughEnergy(cost)) {
-                    board.beginAction(u, board.selectedAction.getName());
-                    board.selectedAction.execute(board, u, targetCol, targetRow);
-                    board.endAction();
-
-                    board.selectedAction.execute(board, u, targetCol, targetRow);
-                    u.spendEnergy(cost);
-                    u.hasActedThisTurn = true;
-                }
-            }
-
-            u.isWalking = false;
-            u.walkFrameIndex = 0; // RK1
-
-            board.selectedAction = null;
-            board.setActionMode(Board.ActionMode.NONE);
-
-            if (board.allCurrentTeamActed()) {
-                board.endTurn();
-            }
+            board.tryExecuteSelectedActionAt(targetCol, targetRow);
+            return;
         }
     }
 }

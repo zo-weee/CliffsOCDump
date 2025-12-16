@@ -6,6 +6,10 @@ import units.Unit;
 public class Sanctification implements Action {
     public String getName() { return "Sanctification"; }
     public int getEnergyCost() { return 1; }
+    
+    @Override
+    public boolean isSupport() { return true; }
+
 
     public boolean canTarget(Board b, Unit u, int c, int r) {
         Unit t = b.getUnit(c, r);

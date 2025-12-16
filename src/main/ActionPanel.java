@@ -148,7 +148,8 @@ public class ActionPanel extends JPanel {
                 item.addActionListener(ev -> {
                     board.selectedAction = a;
                     board.setActionMode(Board.ActionMode.ATTACK);
-                    board.showAttackHighlightsFor(selectedUnit);
+                    board.showActionTargetsFor(selectedUnit, a);
+
                 });
 
                 menu.add(item);
