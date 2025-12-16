@@ -53,30 +53,25 @@ public class ActionPanel extends JPanel {
         defLabel = new JLabel("DEF: -");
         energyLabel = new JLabel("Energy: -");
 
-        // Fonts
         nameLabel.setFont(new Font("Arial", Font.BOLD, 20));
         hpLabel.setFont(new Font("Arial", Font.BOLD, 14));
 
-        // Colors
         for (JLabel l : new JLabel[]{
                 nameLabel, hpLabel, atkLabel, magicAtkLabel, defLabel, energyLabel
         }) {
             l.setForeground(Color.WHITE);
         }
 
-        // === ROW 1: NAME + HP ===
         JPanel row1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 0));
         row1.setOpaque(false);
         row1.add(nameLabel);
         row1.add(hpLabel);
 
-        // === ROW 2: ATK + MAGIC ATK ===
         JPanel row2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 0));
         row2.setOpaque(false);
         row2.add(atkLabel);
         row2.add(magicAtkLabel);
 
-        // === ROW 3: DEF + ENERGY ===
         JPanel row3 = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 0));
         row3.setOpaque(false);
         row3.add(defLabel);
@@ -94,6 +89,10 @@ public class ActionPanel extends JPanel {
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setOpaque(false);
 
+        buttonsPanel.setBorder(
+                BorderFactory.createEmptyBorder(15, 15, 5, 15)
+        );
+
         moveButton = new JButton("Move");
         attackButton = new JButton("Attack");
 
@@ -103,11 +102,16 @@ public class ActionPanel extends JPanel {
         buttonsPanel.add(moveButton);
         buttonsPanel.add(attackButton);
 
-        /* === PORTRAIT === */
+        /* ================= PORTRAIT ================= */
+
         portraitLabel = new JLabel();
         portraitLabel.setPreferredSize(new Dimension(96, 96));
         portraitLabel.setHorizontalAlignment(SwingConstants.CENTER);
         portraitLabel.setVerticalAlignment(SwingConstants.CENTER);
+
+        portraitLabel.setBorder(
+                BorderFactory.createEmptyBorder(0, 0, 10, 0)
+        );
 
         /* ================= BUTTON LOGIC ================= */
 
@@ -153,14 +157,7 @@ public class ActionPanel extends JPanel {
             menu.show(attackButton, 0, attackButton.getHeight());
         });
 
-        JPanel mainRow = new JPanel();
-        mainRow.setOpaque(false);
-        mainRow.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 0));
-
-        mainRow.add(portraitLabel);
-        mainRow.add(statsPanel);
-
-        add(mainRow, BorderLayout.CENTER);
+        /* ================= LAYOUT: CENTER + EAST ================= */
 
         JPanel contentPanel = new JPanel();
         contentPanel.setOpaque(false);
@@ -179,7 +176,7 @@ public class ActionPanel extends JPanel {
 
     public void setCurrentTurn(units.Unit.Team team) {
         String player = (team == units.Unit.Team.ALLY) ? "Player 1" : "Player 2";
-        //turnLabel.setText("Turn: " + player + " (" + team + ")");
+        // turnLabel.setText("Turn: " + player + " (" + team + ")");
     }
 
     public void setSelectedUnit(Unit u) {
@@ -206,7 +203,7 @@ public class ActionPanel extends JPanel {
             energyLabel.setText("Energy: " + u.energy + " / " + u.maxEnergy);
 
             portraitLabel.setIcon(new ImageIcon(
-                u.picSmall.getScaledInstance(96, 96, Image.SCALE_SMOOTH)
+                    u.picSmall.getScaledInstance(96, 96, Image.SCALE_SMOOTH)
             ));
 
             moveButton.setEnabled(true);
