@@ -19,7 +19,7 @@ public class Mage extends Unit {
         this.atk = 60;
         this.magicAtk = 550;
         this.def = 90;
-        this.energy = 5;
+        this.energy = 2;
         this.maxEnergy = 6;
 
         this.moveRange = 1;
