@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import javax.swing.*;
 import units.*;
+import java.io.File;
 
 public class CharacterSelect extends JPanel {
 
@@ -63,21 +64,26 @@ public class CharacterSelect extends JPanel {
 
         background = new ImageIcon(getClass().getResource("/assets/notsotempbg.png")).getImage();
 
-        try {
-            InputStream is = getClass().getResourceAsStream("/assets/PixelifySans-VariableFont_wght.ttf");
+try {
+    InputStream is = Menu.class.getResourceAsStream(
+        "/assets/PixelifySans-VariableFont_wght.ttf"
+    );
 
-            if (is == null) {
-                throw new RuntimeException("Font not found on classpath");
-            }
+    if (is == null) {
+        throw new RuntimeException("Font stream is null");
+    }
 
-            headerfont = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(24f);
-            pfont = headerfont.deriveFont(16f);
+    headerfont = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(24f);
+    pfont = headerfont.deriveFont(16f);
 
-        } catch (FontFormatException | IOException e) {
-            e.printStackTrace();
-            headerfont = new Font("Serif", Font.BOLD, 36);
-            pfont = headerfont.deriveFont(18f);
-        }
+} catch (Exception e) {
+    System.out.println("FONT LOAD FAILED IN CharacterSelect");
+    e.printStackTrace();   // 👈 THIS IS THE IMPORTANT LINE
+    headerfont = new Font("Serif", Font.BOLD, 36);
+    pfont = headerfont.deriveFont(18f);
+}
+
+
 
         /* ========== LEFT PANEL ========== */
         JPanel leftPanel = new JPanel();
