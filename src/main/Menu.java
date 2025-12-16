@@ -9,9 +9,12 @@ import java.util.ArrayList;
 import javax.swing.*;
 // import units.SelectedTeam;
 
+import audio.MusicPlayer;
+
 public class Menu extends JPanel {
 
     private Image background;
+    private MusicPlayer music;
     Font pixelfont;
     Font smallpixfont;
 
@@ -85,7 +88,7 @@ public class Menu extends JPanel {
         this.add(exitButton, gbc);
 
         startButton.addActionListener(e -> {
-            // Start fresh Player 1 selection
+            music.stop();
             frame.setContentPane(new CharacterSelect(frame, 1, new ArrayList<>()));
             frame.pack();
             frame.revalidate();
@@ -118,6 +121,8 @@ public class Menu extends JPanel {
             }
         });
 
+        music = new MusicPlayer();
+        music.play("src/audio/main.wav", true);
 
         getDamnBorderOutBruh(startButton);
         getDamnBorderOutBruh(exitButton);

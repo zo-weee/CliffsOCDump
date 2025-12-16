@@ -54,6 +54,12 @@ public class Board extends JPanel {
         this(selectedUnits, null);
     }
 
+    private String unitLabel(Unit u) {
+        if (u == null) return "Unknown";
+        String owner = (u.team == null) ? "?" : p(u.team);
+        return owner + "'s " + u.name;
+    }
+
     public Board(ArrayList<Unit> selectedUnits, ActionPanel actionPanel) {
 
         this.units = selectedUnits;
@@ -290,13 +296,16 @@ public class Board extends JPanel {
 
         target.takeDamage(finalDamage);
 
-        String src = (logActor != null) ? ("[" + p(logActor.team) + "] " + logActor.name) : "[System]";
-        logLine("  - " + target.name + " takes " + finalDamage +
-                " dmg (HP: " + target.curHp + "/" + target.maxHp + ")  <" + src + ">");
+        String targetLabel = unitLabel(target);
+        String sourceLabel = (logActor != null) ? unitLabel(logActor) : "System";
+
+        logLine("  - " + targetLabel + " takes " + finalDamage +
+            " dmg (HP: " + target.curHp + "/" + target.maxHp + ")" +
+            " (source: " + sourceLabel + ")");
 
         if (!target.isAlive()) {
             units.remove(target);
-            logLine("    * " + target.name + " was defeated!");
+            logLine("    * " + targetLabel + " was defeated!");
         }
 
         repaint();
@@ -309,9 +318,12 @@ public class Board extends JPanel {
         target.curHp = Math.min(target.maxHp, target.curHp + healAmount);
         int healed = target.curHp - before;
 
-        String src = (logActor != null) ? ("[" + p(logActor.team) + "] " + logActor.name) : "[System]";
-        logLine("  - " + target.name + " healed +" + healed +
-                " (HP: " + target.curHp + "/" + target.maxHp + ")  <" + src + ">");
+        String targetLabel = unitLabel(target);
+        String sourceLabel = (logActor != null) ? unitLabel(logActor) : "System";
+
+        logLine("  - " + targetLabel + " healed +" + healed +
+                " (HP: " + target.curHp + "/" + target.maxHp + ")" +
+                " (source: " + sourceLabel + ")");
 
         repaint();
     }

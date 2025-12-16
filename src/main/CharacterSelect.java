@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import javax.swing.*;
+
+import audio.MusicPlayer;
 import units.*;
 
 public class CharacterSelect extends JPanel {
@@ -14,6 +16,7 @@ public class CharacterSelect extends JPanel {
     private JFrame frame;
     private int playerNumber;           // 1 or 2
     private ArrayList<Unit> teamP1;     // passed forward
+    private MusicPlayer music = new MusicPlayer();
 
     JLabel bigPortrait;
     JLabel nameLabel;
@@ -99,7 +102,6 @@ public class CharacterSelect extends JPanel {
             leftPanel.add(Box.createVerticalStrut(10));
         }
 
-        /* ========== CENTER PANEL ========== */
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.setOpaque(false);
         centerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -250,6 +252,8 @@ public class CharacterSelect extends JPanel {
 
     private void confirmTeam() {
     if (chosenUnits.size() != 4) return;
+
+    music.stop();
 
     if (playerNumber == 1) {
         for (Unit u : chosenUnits) {
