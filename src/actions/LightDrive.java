@@ -33,7 +33,7 @@ public class LightDrive implements Action {
         Unit target = board.getUnit(col, row);
         if (target == null) return;
 
-        int damage = (int)(user.atk * 1.7) + (int)(user.magicAtk * 1.9);
+        int damage = (int)(user.atk * 0.8) + (int)(user.magicAtk * 1.1);
         board.applyDamage(target, damage);
 
         user.gainEnergy(2);

@@ -22,8 +22,11 @@ public class APromiseToLife implements Action {
         List<Unit> snapshot = new ArrayList<>(b.getUnits());
 
         for (Unit t : snapshot) {
-            if (t != null && t.isAlive() && t.team != u.team) {
+            if (t != null && t.isAlive() && t.team == u.team) {
                 t.curHp += (int)(u.maxHp * 0.40);
+                if (t.curHp > t.maxHp){
+                    t.curHp = t.maxHp;
+                }
             }
         }
     }
