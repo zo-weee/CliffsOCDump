@@ -24,7 +24,7 @@ public class Menu extends JPanel {
     private static final int TITLE_TARGET_WIDTH = 700;
     private static final int TITLE_SPACING = 40;
 
-    static void getDamnBorderOutBruh(JButton b) {
+    static void borderControl(JButton b) {
         b.setBorder(BorderFactory.createEmptyBorder());
         b.setBorderPainted(false);
         b.setFocusPainted(false);
@@ -73,8 +73,8 @@ public class Menu extends JPanel {
         startButton.setFont(buttonFont);
         exitButton.setFont(buttonFont);
 
-        getDamnBorderOutBruh(startButton);
-        getDamnBorderOutBruh(exitButton);
+        borderControl(startButton);
+        borderControl(exitButton);
 
         // ===== POSITIONING =====
         int boxX = (width - BOX_WIDTH) / 2;
