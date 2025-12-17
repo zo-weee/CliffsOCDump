@@ -16,6 +16,7 @@ public class ActionPanel extends JPanel {
     private JLabel magicAtkLabel;
     private JLabel defLabel;
     private JLabel energyLabel;
+    private JLabel playerLabel;
 
     private JButton moveButton;
     private JButton attackButton;
@@ -99,6 +100,11 @@ public class ActionPanel extends JPanel {
         statsPanel.add(row3);
         statsPanel.add(Box.createVerticalStrut(10));
 
+        playerLabel = new JLabel("");
+        playerLabel.setForeground(Color.WHITE);
+        playerLabel.setFont(pixelfont.deriveFont(Font.BOLD, 18f));
+        playerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setOpaque(false);
 
@@ -121,6 +127,8 @@ public class ActionPanel extends JPanel {
 
         buttonsPanel.add(moveButton);
         buttonsPanel.add(attackButton);
+
+        add(buttonsPanel, BorderLayout.EAST);
 
         portraitLabel = new JLabel();
         portraitLabel.setPreferredSize(new Dimension(96, 96));
@@ -249,7 +257,10 @@ public class ActionPanel extends JPanel {
 
         contentPanel.add(portraitLabel);
         contentPanel.add(statsPanel);
+        contentPanel.add(Box.createHorizontalStrut(10));
+        contentPanel.add(playerLabel);
 
+        add(buttonsPanel, BorderLayout.EAST);
         add(contentPanel, BorderLayout.CENTER);
         add(buttonsPanel, BorderLayout.EAST);
     }
@@ -275,6 +286,7 @@ public class ActionPanel extends JPanel {
             energyLabel.setText("Energy: -");
 
             portraitLabel.setIcon(null);
+            playerLabel.setText("");
 
             moveButton.setEnabled(false);
             attackButton.setEnabled(false);
@@ -287,13 +299,18 @@ public class ActionPanel extends JPanel {
             energyLabel.setText("Energy: " + u.energy + " / " + u.maxEnergy);
 
             portraitLabel.setIcon(new ImageIcon(
-                    u.picSmall.getScaledInstance(96, 96, Image.SCALE_SMOOTH)
+                u.picSmall.getScaledInstance(96, 96, Image.SCALE_SMOOTH)
             ));
+
+            String playerText =
+                (u.team == Unit.Team.ALLY) ? "PLAYER 1" : "PLAYER 2";
+            playerLabel.setText(playerText);
 
             moveButton.setEnabled(true);
             attackButton.setEnabled(true);
         }
     }
+
 
     public void clearSelection() {
         setSelectedUnit(null);
