@@ -432,9 +432,18 @@ public class CharacterSelect extends JPanel {
             + "</body></html>"
         );
 
-        basicLabel.setText("<html><b>Basic:</b> " + u.basicDesc + "</html>");
-        skillLabel.setText("<html><b>Skill:</b> " + u.skillDesc + "</html>");
-        ultiLabel.setText("<html><b>Ultimate:</b> " + u.ultimateDesc + "</html>");
+        basicLabel.setText(
+            "<html><span style='font-size:11.5px;'><b>Basic:</b> " + u.basicDesc + "</span></html>"
+        );
+
+        skillLabel.setText(
+            "<html><span style='font-size:11.5px;'><b>Skill:</b> " + u.skillDesc + "</span></html>"
+        );
+
+        ultiLabel.setText(
+            "<html><span style='font-size:11.5px;'><b>Ultimate:</b> " + u.ultimateDesc + "</span></html>"
+        );
+
 
         addToTeamBtn.setVisible(true);
     }

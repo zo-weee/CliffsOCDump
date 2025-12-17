@@ -52,7 +52,7 @@ public class Mage extends Unit {
 
         this.ultimateDesc =
             "<html><b>Leviathan's Will</b>" + "<br>"
-            + "Rokorou summons the destructiveness of a black hole dealing 350% of his attack + 100% of his magic attack to all enemies on the battlefield" 
+            + "Presa goes into a state where she summons Leviathan beside her for two turns. During the next two turns, Presa is able to quickly cast Aqua Detention without the need to enter a casting state. Furthermore, the base damage of Aqua Detention is increased to 150% of her magic attack and Energy now costs [1] instead of [2]." 
         ;
 
         this.actions.add(new QueensTorment());
