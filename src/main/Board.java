@@ -2,8 +2,10 @@ package main;
 
 import actions.Action;
 import java.awt.*;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Random;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -411,20 +413,55 @@ public class Board extends JPanel {
     }
 
     public void showMoveHighlightsFor(Unit unitXY) {
+
+        // basically this code goes crazy on the Discrete II
+        // it really ate up all that DSA studying 
         List<Point> tiles = new ArrayList<>();
+
         int startCol = unitXY.getX();
         int startRow = unitXY.getY();
         int moveRange = unitXY.moveRange;
 
-        for (int dx = -moveRange; dx <= moveRange; dx++) {
-            for (int dy = -moveRange; dy <= moveRange; dy++) {
-                int targetCol = startCol + dx;
-                int targetRow = startRow + dy;
+        boolean[][] visited = new boolean[rows][cols];
+        int[][] remaining = new int[rows][cols];
 
-                if (!isInsideBoard(targetCol, targetRow)) continue;
+        Queue<Point> queue = new ArrayDeque<>();
 
-                if (ValidateMove.isMoveValid(this, unitXY, targetCol, targetRow)) {
-                    tiles.add(new Point(targetCol, targetRow));
+        queue.add(new Point(startCol, startRow));
+        remaining[startRow][startCol] = moveRange;
+        visited[startRow][startCol] = true;
+
+        while (!queue.isEmpty()) {
+            Point p = queue.poll();
+            int col = p.x;
+            int row = p.y;
+
+            int movesLeft = remaining[row][col];
+
+            if (!(col == startCol && row == startRow)) {
+                if (getUnit(col, row) == null) {
+                    tiles.add(p);
+                }
+            }
+
+            if (movesLeft == 0) continue;
+
+            int[][] dirs = {
+                { 1, 0 }, { -1, 0 },
+                { 0, 1 }, { 0, -1 }
+            };
+
+            for (int[] d : dirs) {
+                int nc = col + d[0];
+                int nr = row + d[1];
+
+                if (!isInsideBoard(nc, nr)) continue;
+                if (isTileBlocked(nc, nr)) continue;
+
+                if (!visited[nr][nc] || remaining[nr][nc] < movesLeft - 1) {
+                    visited[nr][nc] = true;
+                    remaining[nr][nc] = movesLeft - 1;
+                    queue.add(new Point(nc, nr));
                 }
             }
         }
@@ -433,22 +470,65 @@ public class Board extends JPanel {
     }
 
     public void showAttackHighlightsFor(Unit unitXY) {
+        // watch me be the goat casually /j
         List<Point> tiles = new ArrayList<>();
+
         int startCol = unitXY.getX();
         int startRow = unitXY.getY();
-        int range = unitXY.attackRange;
+        int moveRange = unitXY.attackRange;
 
-        for (int dx = -range; dx <= range; dx++) {
-            for (int dy = -range; dy <= range; dy++) {
-                int targetCol = startCol + dx;
-                int targetRow = startRow + dy;
+        boolean[][] visited = new boolean[rows][cols];
+        int[][] remaining = new int[rows][cols];
 
-                if (dx == 0 && dy == 0) continue;
-                if (!isInsideBoard(targetCol, targetRow)) continue;
+        Queue<Point> queue = new ArrayDeque<>();
 
-                Unit target = getUnit(targetCol, targetRow);
+        queue.add(new Point(startCol, startRow));
+        remaining[startRow][startCol] = moveRange;
+        visited[startRow][startCol] = true;
+
+        while (!queue.isEmpty()) {
+            Point p = queue.poll();
+            int col = p.x;
+            int row = p.y;
+
+            int movesLeft = remaining[row][col];
+
+            if (!(col == startCol && row == startRow)) {
+                Unit target = getUnit(col, row);
                 if (target != null && target.team != unitXY.team) {
-                    tiles.add(new Point(targetCol, targetRow));
+                    tiles.add(p);
+                }
+            }
+
+            if (movesLeft == 0) continue;
+
+            int[][] dirs = {
+                { 1, 0 }, { -1, 0 },
+                { 0, 1 }, { 0, -1 }
+            };
+
+            for (int[] d : dirs) {
+                int nc = col + d[0];
+                int nr = row + d[1];
+
+                if (!isInsideBoard(nc, nr)) continue;
+                if (isTileBlocked(nc, nr)) continue;
+                Unit blocker = getUnit(nc, nr);
+                if (blocker != null) {
+                    if (blocker.team != unitXY.team) {
+                        if (!visited[nr][nc]) {
+                            visited[nr][nc] = true;
+                            remaining[nr][nc] = movesLeft - 1;
+                            queue.add(new Point(nc, nr));
+                        }
+                    }
+                    continue;
+                }
+
+                if (!visited[nr][nc] || remaining[nr][nc] < movesLeft - 1) {
+                    visited[nr][nc] = true;
+                    remaining[nr][nc] = movesLeft - 1;
+                    queue.add(new Point(nc, nr));
                 }
             }
         }

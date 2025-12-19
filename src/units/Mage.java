@@ -22,7 +22,7 @@ public class Mage extends Unit {
         this.energy = 2;
         this.maxEnergy = 6;
 
-        this.moveRange = 1;
+        this.moveRange = 2;
         this.attackRange = 10;
 
         ImageIcon small = new ImageIcon(getClass().getResource("/assets/Mage/picSmall.png"));
