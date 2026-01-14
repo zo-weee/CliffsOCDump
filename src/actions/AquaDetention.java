@@ -3,7 +3,7 @@ package actions;
 import java.util.ArrayList;
 import java.util.List;
 import main.Board;
-import status.DelayedSpellStatus;
+import main.Board.TurnPhase;
 import status.LeviathanWillStatus;
 import units.Unit;
 
@@ -24,7 +24,9 @@ public class AquaDetention implements Action {
 
         boolean empowered = u.hasStatus(LeviathanWillStatus.class);
 
-
+        // 14-JAN-2026: reformatted AquaDetention to use the new ScheduledAction features;
+        // original code commented out jic it literally doesn't work
+        // if it works, we can delete DelayedSpellStatus - it's no longer being used
 
         if (empowered) {
             List<Unit> snapshot = new ArrayList<>(b.getUnits());
@@ -35,6 +37,7 @@ public class AquaDetention implements Action {
                 }
             }
         } else {
+        /*
             u.def /= 2;
 
             u.addStatus(new DelayedSpellStatus(3, () -> {
@@ -46,6 +49,17 @@ public class AquaDetention implements Action {
                 }
                 u.def *= 2;
             }));
+            */
+            u.def /= 2;
+            b.scheduleAction(3, TurnPhase.END, board -> {
+                List<Unit> snapshot = new ArrayList<>(b.getUnits());
+                for (Unit t : snapshot) {
+                    if (t != null && t.isAlive() && t.team != u.team) {
+                        b.applyDamage(t, (int)(u.magicAtk * 1.2));
+                    }
+                }
+                u.def *= 2;
+            });
         }
     }
 

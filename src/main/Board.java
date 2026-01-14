@@ -4,6 +4,7 @@ import actions.Action;
 import java.awt.*;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
@@ -29,6 +30,13 @@ public class Board extends JPanel {
         ALLY_TARGET
     }
 
+    public enum TurnPhase {
+        START,
+        END
+    }
+
+    private List<ScheduledAction> scheduledActions = new ArrayList<>();
+
     private String logActionName = null;
     public Unit.Team currentTurn = Unit.Team.ALLY;
 
@@ -52,6 +60,10 @@ public class Board extends JPanel {
     private Unit logActor = null;
 
     private boolean gameOver = false;
+
+    public interface TurnAction {
+        void execute(Board board);
+    }
 
     public interface GameOverListener {
         // winner == null means draw (both dead)
@@ -339,6 +351,32 @@ public class Board extends JPanel {
         repaint();
     }
 
+    // 14-JAN-2026 NEW ADDITION: this code schedules actions for when a move or thing occurs at the beginning or end of a turn,
+    // whether it be the current or the next or whatever
+    public void scheduleAction(int turns, TurnPhase phase, TurnAction action) {
+        scheduledActions.add(new ScheduledAction(turns, phase, action));
+    }
+
+    // 14-JAN-2026 NEW ADDITION: this code resolves all the scheduled actions from the function above
+    // the way this works is by checking whether the phase the action will happen is either START (start of turn) or END (end of turn)
+    // if the actions scheduled have that phase and have the amount of turns they're delayed for by equal to or less than 0
+    // execute them and remove them from the list
+    private void resolveActions(TurnPhase phase) {
+        Iterator<ScheduledAction> it = scheduledActions.iterator();
+
+        while(it.hasNext()) {
+            ScheduledAction act = it.next();
+            if (act.phase != phase) continue;
+            act.turnsRemaining--;
+            if (act.turnsRemaining <= 0) {
+                act.action.execute(this);
+                it.remove();
+            }
+        }
+    }
+
+    // the capabilities of both functions above have been added to EndTurn()
+
     public void applyDamage(Unit target, int damage) {
         if (target == null) return;
 
@@ -546,6 +584,9 @@ public class Board extends JPanel {
     }
 
     public void endTurn() {
+
+        resolveActions(TurnPhase.END);
+
         for (Unit u : units) {
             if (u.team == currentTurn && u.isAlive()) {
                 u.processStatuses(this);
@@ -553,6 +594,8 @@ public class Board extends JPanel {
         }
 
         currentTurn = (currentTurn == Unit.Team.ALLY) ? Unit.Team.ENEMY : Unit.Team.ALLY;
+
+        resolveActions(TurnPhase.START);
 
         for (Unit u : units) {
             if (u.team == currentTurn && u.isAlive()) {
