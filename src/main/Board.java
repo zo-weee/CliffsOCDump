@@ -384,7 +384,7 @@ public class Board extends JPanel {
 
         target.takeDamage(finalDamage);
         target.triggerFlash(new Color(255, 0, 0, 140)); // RED
-
+        target.hpRatio = target.curHp / (float) target.maxHp;
 
         String targetLabel = unitLabel(target);
 
@@ -404,8 +404,9 @@ public class Board extends JPanel {
         if (target == null) return;
 
         int before = target.curHp;
-        target.curHp = Math.min(target.maxHp, target.curHp + healAmount);
+        target.takeHealing(healAmount);
         int healed = target.curHp - before;
+        target.hpRatio = target.curHp / (float) target.maxHp;
 
         String targetLabel = unitLabel(target);
         target.triggerFlash(new Color(0, 255, 0, 140)); // GREEN
@@ -735,6 +736,7 @@ public class Board extends JPanel {
 
         for (Unit u : units) {
             u.draw(g2d, tileSize, offsetX, offsetY);
+            u.drawHealthBar(g2d, tileSize, offsetX, offsetY);
         }
 
         if (selectedUnit != null) {

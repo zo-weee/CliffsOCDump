@@ -21,6 +21,9 @@ public abstract class Unit {
     public String name;
     public String role;
     public int curHp, maxHp;
+    public float hpRatio;
+    public float hpRatioShown; // the red HP bar
+    public float hpRatioBack; // the grey/green HP bar
     public int atk, magicAtk;
     public int def;
     public int energy, maxEnergy;
@@ -29,6 +32,7 @@ public abstract class Unit {
     public int attackRange;
 
     public boolean hasActedThisTurn = false;
+    public boolean beingHealed = false;
 
     public boolean isFlashing = false;
     public Color flashColor = null;
@@ -79,7 +83,22 @@ public abstract class Unit {
 
     public void takeDamage(int dmg){
         curHp -= dmg;
-        if (curHp < 0) curHp = 0;
+        curHp = Math.max(0, Math.min(curHp, maxHp));
+        hpRatio = curHp / (float) maxHp;
+        hpRatioShown = hpRatio;
+
+        beingHealed = false;
+    }
+    
+    // 21-JAN-2026 NEW ADDITION: this replaces the functionalities of checking for healing in Board.java because that's clunky and stupid;
+    // also lets me check healing in Unit.java so it can draw the damn health bar
+    public void takeHealing(int heal) {
+        curHp += heal;
+        if (curHp > maxHp) curHp = maxHp;
+        hpRatio = curHp / (float) maxHp;
+        hpRatioBack = hpRatio;
+
+        beingHealed = true;
     }
 
     public boolean hasEnoughEnergy(int cost) {
@@ -140,6 +159,49 @@ public abstract class Unit {
         } catch (Exception e) {
             throw new RuntimeException("Failed to copy unit", e);
         }
+    }
+
+    // 20-JAN-2026 NEW ADDITION: this code draws the unit's health bar, animation and all; this accounts for healing too
+    public void drawHealthBar(Graphics2D hpbar, int tileSize, int offsetX, int offsetY) {
+
+        if (!isAlive() || curHp == maxHp) return;
+
+        if (hpRatioShown == 0f && curHp > 0) {
+            hpRatioShown = hpRatio;
+        }
+
+        hpRatioShown = Math.max(0f, Math.min(1f, hpRatioShown));
+
+        float speed = 0.01f;
+        if (hpRatioShown > hpRatio) {
+            hpRatioShown = Math.max(hpRatio, hpRatioShown - speed);
+        } else if (hpRatioShown < hpRatio) {
+            hpRatioShown = Math.min(hpRatio, hpRatioShown + speed);
+        }
+
+        float backSpeed = 0.01f;
+        if (hpRatioBack > hpRatio) {
+            hpRatioBack = Math.max(hpRatio, hpRatioBack - backSpeed);
+        } else {
+            hpRatioBack = hpRatio;
+        }
+
+        int barHeight = (int) tileSize / 10;
+        int x = offsetX + getX() * tileSize;
+        int y = offsetY + getY() * tileSize + tileSize - barHeight - 3;
+
+        Color backColor = beingHealed ? Color.GREEN : Color.DARK_GRAY;
+
+        hpbar.setColor(backColor);
+        hpbar.fillRect(x + 2, y, (int)((tileSize - 4) * hpRatioBack), barHeight);
+
+        hpbar.setColor(Color.RED);
+        hpbar.fillRect(x + 2, y, (int)((tileSize - 4) * hpRatioShown), barHeight);
+
+        if (beingHealed && hpRatioShown >= hpRatio) {
+            beingHealed = false;
+        }
+
     }
 
     public abstract void loadWalkSprites();
