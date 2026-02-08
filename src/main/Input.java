@@ -1,9 +1,8 @@
 package main;
 
-import units.Unit;
-
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import units.Unit;
 
 public class Input extends MouseAdapter {
 
@@ -76,14 +75,17 @@ public class Input extends MouseAdapter {
             }
 
             if (ValidateMove.isMoveValid(board, u, targetCol, targetRow)) {
-                Move m = new Move(board, u, targetCol, targetRow);
-                board.makeMove(m);
 
-                u.hasActedThisTurn = true;
+                board.calculateShortestPath(u, targetCol, targetRow, true);
+
+                if (u.movePath != null && !u.movePath.isEmpty()) {
+                    Move m = new Move(board, u);
+                    board.enqueueMove(m);
+                    u.hasActedThisTurn = true;
+                } else {
+                    System.out.println("No valid path found for movement!");
+                }
             }
-
-            u.isWalking = false;
-            u.walkFrameIndex = 0; // back to RK1
 
             board.setActionMode(Board.ActionMode.NONE);
 

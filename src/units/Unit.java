@@ -5,6 +5,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Queue;
 import main.Board;
 import status.Status;
 
@@ -39,13 +40,22 @@ public abstract class Unit {
     public long flashStartTime = 0;
     public static final int FLASH_DURATION = 150; // ms
 
+    // 08-FEB-2026 NEW ADDITION: the following variables are for handling unit coordinate position and speed during movement
+    // all of them can be overridden based on whether or not we want a unit to move faster or slower in some way
+    // but it isn't recommended to make it any slower than the baseline unless they have a short movement range
+    // since they move at a fixed speed and all actions are paused while they're moving
+    public float pixelX, pixelY;
+    public Queue<Point> movePath = null;
+    public Point moveFrom, moveTo;
+    public float moveProgress = 0f;
+    public float moveSpeed = 0.08f;
+    public boolean isMoving = false;
+
     public void triggerFlash(Color color) {
         isFlashing = true;
         flashColor = color;
         flashStartTime = System.currentTimeMillis();
     }
-
-    public abstract void draw(Graphics2D g2d, int tileSize, int offsetX, int offsetY);
     public List<Action> actions = new ArrayList<>();
     public ArrayList<Status> statuses = new ArrayList<>();
 
@@ -205,5 +215,34 @@ public abstract class Unit {
     }
 
     public abstract void loadWalkSprites();
+
+    // 08-FEB-2026 NEW ADDITION: defined Unit.draw() because it was literally using the same code across every unit via @Override
+    // yall really wanted to make your lives harder
+    public void draw(Graphics2D g2d, int tileSize, int offsetX, int offsetY) {
+        if (walkFrames == null || walkFrames.length == 0) return;
+
+        // Choose frame: walking animation if moving, otherwise first frame
+        Image frame = (isWalking && walkFrames != null)
+            ? walkFrames[walkFrameIndex]
+            : walkFrames[0];
+
+        int padding = 6;
+
+        // Position to draw: use drawX/drawY if moving, otherwise center on tile
+        float drawPosX = isMoving ? pixelX : offsetX + x * tileSize + tileSize / 2f;
+        float drawPosY = isMoving ? pixelY : offsetY + y * tileSize + tileSize / 2f;
+
+        int xInt = (int) (drawPosX - tileSize / 2 + padding);
+        int yInt = (int) (drawPosY - tileSize / 2 + padding);
+
+        g2d.drawImage(
+            frame,
+            xInt,
+            yInt,
+            tileSize - padding * 2,
+            tileSize - padding * 2,
+            null
+        );
+    }
 
 }

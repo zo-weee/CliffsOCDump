@@ -54,6 +54,13 @@ public class Board extends JPanel {
     public Unit selectedUnit;
     private ActionPanel actionPanel;
 
+    // 08-FEB-2026 NEW ADDITION: movement-related variables in Board
+    // the idea is that the logical part of any animation-related stuff will be handled by other classes in main;
+    // Board.java is only responsible for painting the results of the calculations done
+    // in this one, ally and enemy movement is handled by Move.java and reflected by Board.java
+    private Queue<Move> moveQueue = new ArrayDeque<>();
+    private Move currentMove = null;
+
     private List<Point> highlights = new ArrayList<>();
 
     private StatusBoard statusBoard;
@@ -180,8 +187,19 @@ public class Board extends JPanel {
             actionPanel.setCurrentTurn(currentTurn);
         }
 
+        // 08-FEB-2026 NEW ADDITION: rebuilt timer system to instead gain animation queues from a Move.java queue
+        // this basically lets us do a lot of funky animation-related stuff now
         new Timer(16, e -> {
             if (gameOver) return;
+            if (currentMove != null) {
+                currentMove.update(0.016f);
+                if (currentMove.finished) {
+                    currentMove = null;
+                }
+            }
+            if (currentMove == null && !moveQueue.isEmpty()) {
+                currentMove = moveQueue.poll();
+            }
             for (Unit u : units) u.updateAnimation();
             repaint();
         }).start();
@@ -224,6 +242,9 @@ public class Board extends JPanel {
             if (u.team == Unit.Team.ENEMY) {
                 if (enemyIndex < startX.length) {
                     u.setPosition(startX[enemyIndex], enemyRow);
+                    Point.Float pixelPos = tileToPixel(u.getX(), u.getY());
+                    u.pixelX = pixelPos.x;
+                    u.pixelY = pixelPos.y;
                     enemyIndex++;
                 }
             } else {
@@ -231,6 +252,9 @@ public class Board extends JPanel {
 
                 if (allyIndex < startX.length) {
                     u.setPosition(startX[allyIndex], allyRow);
+                    Point.Float pixelPos = tileToPixel(u.getX(), u.getY());
+                    u.pixelX = pixelPos.x;
+                    u.pixelY = pixelPos.y;
                     allyIndex++;
                 }
             }
@@ -306,7 +330,7 @@ public class Board extends JPanel {
                 && u.team == currentTurn
                 && !u.hasActedThisTurn;
     }
-
+    /*
     public void makeMove(Move move) {
         logLine("[" + p(move.u.team) + "] " + move.u.name +
                 " moves! (" + move.og_col + "," + move.og_row + " -> " +
@@ -319,7 +343,7 @@ public class Board extends JPanel {
         move.u.setPosition(move.new_col, move.new_row);
         repaint();
     }
-
+    */
 
     public void performAttack(Unit attacker, int targetCol, int targetRow) {
         Unit target = getUnit(targetCol, targetRow);
@@ -508,6 +532,68 @@ public class Board extends JPanel {
         setHighlights(tiles);
     }
 
+    // 08-FEB-2026 NEW ADDITION: helps calculate the shortest path between the unit's tile and the target movement tile
+    public void calculateShortestPath(Unit u, int targetCol, int targetRow, boolean ignoreAllies) {
+        if (u == null) return;
+        if (!isInsideBoard(targetCol, targetRow)) return;
+        if (isTileBlocked(targetCol, targetRow)) return;
+
+        boolean[][] visited = new boolean[rows][cols];
+        Point[][] cameFrom = new Point[rows][cols];
+
+        Queue<Point> queue = new ArrayDeque<>();
+        Point start = new Point(u.getX(), u.getY());
+        queue.add(start);
+        visited[start.y][start.x] = true;
+
+        int[][] directions = { {1,0}, {-1,0}, {0,1}, {0,-1} };
+        boolean found = false;
+
+        while (!queue.isEmpty()) {
+            Point current = queue.poll();
+            if (current.x == targetCol && current.y == targetRow) {
+                found = true;
+                break;
+            }
+
+            for (int[] d : directions) {
+                int nx = current.x + d[0];
+                int ny = current.y + d[1];
+
+                if (!isInsideBoard(nx, ny)) continue;
+                if (isTileBlocked(nx, ny)) continue;
+
+                Unit blocker = getUnit(nx, ny);
+                if (blocker != null && blocker != u) {
+                    if (!ignoreAllies || blocker.team != u.team) {
+                        continue; // only block if not ignoring allies
+                    }
+                } // can't pass through other units
+
+                if (!visited[ny][nx]) {
+                    visited[ny][nx] = true;
+                    cameFrom[ny][nx] = current;
+                    queue.add(new Point(nx, ny));
+                }
+            }
+        }
+
+        if (!found) {
+            u.movePath = null; // no valid path
+            return;
+        }
+
+        // backtrack to build path
+        ArrayDeque<Point> path = new ArrayDeque<>();
+        Point current = new Point(targetCol, targetRow);
+        while (!current.equals(start)) {
+            path.addFirst(current);
+            current = cameFrom[current.y][current.x];
+        }
+
+        u.movePath = path;
+    }
+
     public void showAttackHighlightsFor(Unit unitXY) {
         // watch me be the goat casually /j
         List<Point> tiles = new ArrayList<>();
@@ -678,6 +764,17 @@ public class Board extends JPanel {
         this.logActionName = null;
     }
 
+    // 08-FEB-2026 NEW ADDITION: utility method that converts tiles into pixel coordinates to be passed to Move.java for animation
+    public Point.Float tileToPixel(int col, int row) {
+        float x = offsetX + col * tileSize + tileSize / 2f;
+        float y = offsetY + row * tileSize + tileSize / 2f;
+        return new Point.Float(x, y);
+    }
+    // 08-FEB-2026 NEW ADDITION: utility method that queues a move into moveQueue
+    public void enqueueMove(Move move) {
+        moveQueue.add(move);
+    }
+
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -794,3 +891,24 @@ public class Board extends JPanel {
     }
 
 }
+
+/*
+    STUFF TO ADD:
+    - BFS shortest path for movement / movement animation
+    - camera focus effects, animation for world generation 
+    - TURN START / PLAYER 2 TURN START / ENEMY TURN START
+    - an actually more integrated turn counter because rn it's like lowkey so ass
+    - add an option to skip turns for more energy gain
+    - skybox. literally just skybox 
+    - main menu overhaul so they can do that cutscene thing they want to do
+    - maybe make an enemy AI thing
+    - original music? how many of these can we even finish in february
+    - oh and multiplayer but only if i really really hate myself
+
+    STUFF FOR THE STALL:
+    - stickersssss
+    - pinsssssssss
+    - shirts??????
+    - posterssssss
+    - biiig poster
+*/

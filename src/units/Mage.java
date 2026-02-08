@@ -61,25 +61,6 @@ public class Mage extends Unit {
     }
 
     @Override
-    public void draw(Graphics2D g2d, int tileSize, int offsetX, int offsetY) {
-
-        Image frame = (isWalking && walkFrames != null)
-            ? walkFrames[walkFrameIndex]
-            : walkFrames[0];
-
-        int padding = 6;
-
-        g2d.drawImage(
-            frame,
-            offsetX + x * tileSize + padding,
-            offsetY + y * tileSize + padding,
-            tileSize - padding * 2,
-            tileSize - padding * 2,
-            null
-        );
-    }
-
-    @Override
     public void loadWalkSprites() {
 
         walkFrames = new Image[8];
