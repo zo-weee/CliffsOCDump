@@ -20,7 +20,7 @@ public class Menu extends JPanel {
     private static final int BOX_HEIGHT = 70;
     private static final int BOX_SPACING = 20;
 
-    private static final int TITLE_Y = 0;
+    private static final int TITLE_Y = 50;
     private static final int TITLE_TARGET_WIDTH = 700;
     private static final int TITLE_SPACING = 40;
 
