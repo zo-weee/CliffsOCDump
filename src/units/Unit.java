@@ -200,12 +200,26 @@ public abstract class Unit {
         int x = offsetX + getX() * tileSize;
         int y = offsetY + getY() * tileSize + tileSize - barHeight - 3;
 
-        Color backColor = beingHealed ? Color.GREEN : Color.DARK_GRAY;
+        Color frontColor;
+        Color backColor;
+
+        if (team == Team.ALLY) {
+            frontColor = new Color(0, 153, 0); // greenish HP
+            backColor = new Color(40, 100, 70);
+        } else {
+            frontColor = new Color(220, 70, 70); // enemy red
+            backColor = new Color(120, 40, 40);
+        }
+
+        // healing override
+        if (beingHealed) {
+            backColor = Color.GREEN;
+        }
 
         hpbar.setColor(backColor);
         hpbar.fillRect(x + 2, y, (int)((tileSize - 4) * hpRatioBack), barHeight);
 
-        hpbar.setColor(Color.RED);
+        hpbar.setColor(frontColor);
         hpbar.fillRect(x + 2, y, (int)((tileSize - 4) * hpRatioShown), barHeight);
 
         if (beingHealed && hpRatioShown >= hpRatio) {

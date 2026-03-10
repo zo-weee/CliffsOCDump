@@ -26,7 +26,7 @@ public class DevilsMaw implements Action {
             }
         }
 
-        u.def = (int)(u.def * 1.3);
+        u.def = (int)(u.def * 1.1);
     }
 }
 

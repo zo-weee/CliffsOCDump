@@ -14,7 +14,7 @@ public class Tank extends Unit {
         this.name = "Cerberus";
         this.role = "Tank";
 
-        this.maxHp = 1850;
+        this.maxHp = 2250;
         this.curHp = maxHp;
         this.atk = 150;
         this.magicAtk = 40;

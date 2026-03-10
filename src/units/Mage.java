@@ -14,10 +14,10 @@ public class Mage extends Unit {
         this.name = "Celestia Presa";
         this.role = "Mage";
 
-        this.maxHp = 1100;
+        this.maxHp = 1600;
         this.curHp = maxHp;
         this.atk = 60;
-        this.magicAtk = 550;
+        this.magicAtk = 650;
         this.def = 90;
         this.energy = 2;
         this.maxEnergy = 6;

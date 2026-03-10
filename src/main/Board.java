@@ -356,9 +356,10 @@ public class Board extends JPanel {
         }
 
         double damageMultiplier = attacker.atk / (double)(attacker.atk + target.def);
+        System.out.println("DAMAGE MULTIPLIER: " + target.name + damageMultiplier);
         int finalDamage = (int)(attacker.atk * damageMultiplier);
-        finalDamage = Math.max(1, finalDamage);
 
+        System.out.println("FINAL DAMAGE DEALT TO " + target.name + damageMultiplier);
 
         target.takeDamage(finalDamage);
 
@@ -404,7 +405,7 @@ public class Board extends JPanel {
     public void applyDamage(Unit target, int damage) {
         if (target == null) return;
 
-        int finalDamage = Math.max(0, damage - target.def);
+        int finalDamage = Math.max(350, damage - target.def);
 
         target.takeDamage(finalDamage);
         target.triggerFlash(new Color(255, 0, 0, 140)); // RED
